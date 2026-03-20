@@ -46,7 +46,7 @@ export default function LoginPage() {
       <div className={styles.loginCard}>
         <div className={styles.loginLogoSection}>
           <div className={styles.loginBrand}>
-            <Image src="/logo-full.png" alt="Yogiji Digi" className={styles.logoImage} width={220} height={64} priority />
+            <Image src="/YDLOGO.png" alt="Yogiji Digi" className={styles.logoImage} width={220} height={64} priority />
           </div>
           <div className={styles.companyTitle}>YOGIJI DIGI</div>
           <div className={styles.companySubtitle}>Perpetual Innovation</div>

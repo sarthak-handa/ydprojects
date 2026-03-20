@@ -116,13 +116,13 @@ export default function Sidebar({ collapsed, onToggle }: SidebarProps) {
       <div className={styles.sidebarHeader}>
         {!collapsed && (
           <div className={styles.logo}>
-            <Image src="/logo-full.png" alt="Yogiji Digi" className={styles.logoImg} width={132} height={36} priority />
+            <Image src="/YDLOGO.png" alt="Yogiji Digi" className={styles.logoImg} width={132} height={36} priority />
             <div className={styles.brandText}>YOGIJI DIGI</div>
             <div className={styles.brandTagline}>Perpetual Innovation</div>
           </div>
         )}
         {collapsed && (
-          <Image src="/logo-icon.png" alt="YD" width={28} height={28} priority />
+          <Image src="/yd-favicon.png" alt="YD" width={28} height={28} priority />
         )}
         <button className={styles.collapseBtn} onClick={onToggle}>
           {collapsed ? <ChevronRight size={14} /> : <ChevronLeft size={14} />}
