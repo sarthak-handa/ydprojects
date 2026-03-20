@@ -77,6 +77,7 @@ export const navigationItems: NavItem[] = [
     icon: 'AlertTriangle',
     children: [
       { id: 'issues', label: 'Issues', icon: 'AlertCircle', href: '/issue-management' },
+      { id: 'action-items', label: 'Action Items', icon: 'ListTodo', href: '/issue-management/action-items' },
       { id: 'red-flags', label: 'Red Flags', icon: 'Siren', href: '/red-flags' },
     ],
   },
@@ -85,7 +86,9 @@ export const navigationItems: NavItem[] = [
     label: 'File Mgmt.',
     icon: 'FolderOpen',
     children: [
-      { id: 'files', label: 'Files', icon: 'File', href: '/file-management' },
+      { id: 'global-list', label: 'Global List', icon: 'File', href: '/file-management/global-list' },
+      { id: 'folder-view', label: 'Folder View', icon: 'FolderTree', href: '/file-management/folder-view' },
+      { id: 'transmittal', label: 'Transmittal', icon: 'Send', href: '/file-management/transmittal' },
     ],
   },
   {

@@ -1,5 +1,5 @@
-'use client';
-import PlaceholderPage from '@/components/PlaceholderPage';
+import { redirect } from "next/navigation";
+
 export default function FileManagementPage() {
-  return <PlaceholderPage title="File Management" description="Upload, download, and manage project documents and files." icon="📁" />;
+  redirect("/file-management/global-list");
 }

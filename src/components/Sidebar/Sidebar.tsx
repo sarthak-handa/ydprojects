@@ -10,7 +10,7 @@ import {
   AlertTriangle, AlertCircle, FolderOpen, File as FileIcon, UserCog, Building,
   UserPlus, Settings, ChevronDown, ChevronLeft, ChevronRight,
   Mail, HelpCircle, Link as LinkIcon, ArrowDownLeft, ArrowUpRight, LineChart,
-  Truck, Siren
+  Truck, Siren, ListTodo, FolderTree, Send
 } from 'lucide-react';
 import { navigationItems, NavItem } from '@/data/navigation';
 import styles from './Sidebar.module.css';
@@ -21,7 +21,7 @@ const iconMap: Record<string, React.ComponentType<{ size?: number }>> = {
   FileText, GitBranch, CheckSquare, ClipboardCheck, Briefcase, CheckCircle,
   AlertTriangle, AlertCircle, FolderOpen, File: FileIcon, UserCog, Building,
   UserPlus, Settings, ArrowDownLeft, ArrowUpRight, LineChart,
-  Truck, Siren,
+  Truck, Siren, ListTodo, FolderTree, Send,
 };
 
 interface SidebarProps {

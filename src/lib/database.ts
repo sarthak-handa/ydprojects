@@ -119,6 +119,40 @@ function ensureDatabase() {
       FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE CASCADE,
       FOREIGN KEY (assembly_id) REFERENCES assemblies(id) ON DELETE SET NULL
     );
+    CREATE TABLE IF NOT EXISTS action_items (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      project_id INTEGER NOT NULL,
+      title TEXT NOT NULL,
+      owner TEXT NOT NULL,
+      source TEXT NOT NULL,
+      due_date TEXT NOT NULL,
+      status TEXT NOT NULL,
+      notes TEXT,
+      FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE CASCADE
+    );
+    CREATE TABLE IF NOT EXISTS file_documents (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      project_id INTEGER NOT NULL,
+      folder_name TEXT NOT NULL,
+      file_name TEXT NOT NULL,
+      document_type TEXT NOT NULL,
+      revision TEXT NOT NULL,
+      owner TEXT NOT NULL,
+      status TEXT NOT NULL,
+      updated_at TEXT NOT NULL,
+      FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE CASCADE
+    );
+    CREATE TABLE IF NOT EXISTS transmittals (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      project_id INTEGER NOT NULL,
+      transmittal_no TEXT NOT NULL,
+      recipient TEXT NOT NULL,
+      document_count INTEGER NOT NULL,
+      sent_date TEXT NOT NULL,
+      status TEXT NOT NULL,
+      remarks TEXT,
+      FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE CASCADE
+    );
   `);
 
   seedDatabase(db);
@@ -164,6 +198,18 @@ function seedDatabase(db: Database.Database) {
       project_id, assembly_id, title, description, priority, raised_by, assigned_to, due_date, status
     )
     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+  `);
+  const insertActionItem = db.prepare(`
+    INSERT INTO action_items (project_id, title, owner, source, due_date, status, notes)
+    VALUES (?, ?, ?, ?, ?, ?, ?)
+  `);
+  const insertFile = db.prepare(`
+    INSERT INTO file_documents (project_id, folder_name, file_name, document_type, revision, owner, status, updated_at)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+  `);
+  const insertTransmittal = db.prepare(`
+    INSERT INTO transmittals (project_id, transmittal_no, recipient, document_count, sent_date, status, remarks)
+    VALUES (?, ?, ?, ?, ?, ?, ?)
   `);
 
   const seed = db.transaction(() => {
@@ -218,6 +264,12 @@ function seedDatabase(db: Database.Database) {
     insertPayment.run(projectA, "Prime Fab", "PO-RC-014", "INV-PF-07", 25000, 0, "Due", "2026-04-02", "Pending PM");
     insertFlag.run(projectA, assemblyA2, "Hydraulic pack delay", "Vendor pushed delivery by four days; impacts leveller trial fitment.", "High", "Procurement", "Om Dev", "2026-03-23", "Open");
     insertFlag.run(projectA, assemblyA3, "Safety guard pending release", "Drawing approval is pending from engineering; dispatch cannot close.", "Critical", "Engineering", "Aditya Saini", "2026-03-21", "In Progress");
+    insertActionItem.run(projectA, "Close leveller vendor slippage", "Om Dev", "Review Meeting", "2026-03-24", "Open", "Escalate delivery and update readiness.");
+    insertActionItem.run(projectA, "Approve recoiler safety guard drawing", "Aditya Saini", "Engineering Review", "2026-03-21", "In Progress", "Needed before final dispatch.");
+    insertFile.run(projectA, "Engineering", "GA-Uncoiler.pdf", "Drawing", "R3", "Aditya Saini", "Released", "2026-03-18");
+    insertFile.run(projectA, "Procurement", "PO-UC-001.xlsx", "Purchase Order", "R1", "Procurement", "Shared", "2026-03-15");
+    insertFile.run(projectA, "Quality", "Inspection-Report-LV.docx", "Report", "R0", "QA Team", "Draft", "2026-03-19");
+    insertTransmittal.run(projectA, "TR-2601-01", "JSW Steel", 4, "2026-03-18", "Sent", "GA drawings and BOM summary shared.");
 
     const categoryB = db.prepare("SELECT id, name FROM categories WHERE project_id = ?").all(projectB) as Array<{ id: number; name: string }>;
     const catMapB = new Map(categoryB.map((row) => [row.name, row.id]));
@@ -225,6 +277,9 @@ function seedDatabase(db: Database.Database) {
     const subB1 = insertSubassembly.run(assemblyB1, "Roll Housing").lastInsertRowid as number;
     insertComponent.run(projectB, assemblyB1, subB1, "Roll Housing Plate", "DRG-B-101", 2, "IS2062", 88, "Prime Fab", "PO-B-001", 21000, 42000, "Ordered", "2026-03-06", "2026-03-25", null, null);
     insertPayment.run(projectB, "Prime Fab", "PO-B-001", "INV-B-01", 42000, 0, "Due", "2026-03-31", "Pending PM");
+    insertActionItem.run(projectB, "Issue vendor PO release", "Om Dev", "Kickoff", "2026-03-28", "Open", "Needed to hold engineering dates.");
+    insertFile.run(projectB, "Engineering", "Recoiler-Layout.pdf", "Drawing", "R1", "Om Dev", "Released", "2026-03-17");
+    insertTransmittal.run(projectB, "TR-2602-01", "Tata Steel", 2, "2026-03-20", "Pending Ack", "Initial layout package.");
   });
 
   seed();
@@ -686,6 +741,125 @@ export function getRedFlags(projectId?: number) {
         ELSE 3
       END,
       rf.due_date
+  `).all(...(projectId ? [projectId] : []));
+}
+
+export function createActionItem(input: {
+  projectId: number;
+  title: string;
+  owner: string;
+  source: string;
+  dueDate: string;
+  status: string;
+  notes?: string;
+}) {
+  const db = database();
+  const result = db.prepare(`
+    INSERT INTO action_items (project_id, title, owner, source, due_date, status, notes)
+    VALUES (?, ?, ?, ?, ?, ?, ?)
+  `).run(
+    input.projectId,
+    input.title,
+    input.owner,
+    input.source,
+    input.dueDate,
+    input.status,
+    input.notes ?? null,
+  );
+
+  return db.prepare("SELECT * FROM action_items WHERE id = ?").get(result.lastInsertRowid);
+}
+
+export function getActionItems(projectId?: number) {
+  return database().prepare(`
+    SELECT
+      ai.*,
+      p.code AS project_code,
+      p.name AS project_name
+    FROM action_items ai
+    INNER JOIN projects p ON p.id = ai.project_id
+    ${projectId ? "WHERE ai.project_id = ?" : ""}
+    ORDER BY ai.due_date, ai.status
+  `).all(...(projectId ? [projectId] : []));
+}
+
+export function createFileDocument(input: {
+  projectId: number;
+  folderName: string;
+  fileName: string;
+  documentType: string;
+  revision: string;
+  owner: string;
+  status: string;
+  updatedAt: string;
+}) {
+  const db = database();
+  const result = db.prepare(`
+    INSERT INTO file_documents (project_id, folder_name, file_name, document_type, revision, owner, status, updated_at)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+  `).run(
+    input.projectId,
+    input.folderName,
+    input.fileName,
+    input.documentType,
+    input.revision,
+    input.owner,
+    input.status,
+    input.updatedAt,
+  );
+
+  return db.prepare("SELECT * FROM file_documents WHERE id = ?").get(result.lastInsertRowid);
+}
+
+export function getFileDocuments(projectId?: number) {
+  return database().prepare(`
+    SELECT
+      fd.*,
+      p.code AS project_code,
+      p.name AS project_name
+    FROM file_documents fd
+    INNER JOIN projects p ON p.id = fd.project_id
+    ${projectId ? "WHERE fd.project_id = ?" : ""}
+    ORDER BY fd.folder_name, fd.updated_at DESC
+  `).all(...(projectId ? [projectId] : []));
+}
+
+export function createTransmittal(input: {
+  projectId: number;
+  transmittalNo: string;
+  recipient: string;
+  documentCount: number;
+  sentDate: string;
+  status: string;
+  remarks?: string;
+}) {
+  const db = database();
+  const result = db.prepare(`
+    INSERT INTO transmittals (project_id, transmittal_no, recipient, document_count, sent_date, status, remarks)
+    VALUES (?, ?, ?, ?, ?, ?, ?)
+  `).run(
+    input.projectId,
+    input.transmittalNo,
+    input.recipient,
+    input.documentCount,
+    input.sentDate,
+    input.status,
+    input.remarks ?? null,
+  );
+
+  return db.prepare("SELECT * FROM transmittals WHERE id = ?").get(result.lastInsertRowid);
+}
+
+export function getTransmittals(projectId?: number) {
+  return database().prepare(`
+    SELECT
+      t.*,
+      p.code AS project_code,
+      p.name AS project_name
+    FROM transmittals t
+    INNER JOIN projects p ON p.id = t.project_id
+    ${projectId ? "WHERE t.project_id = ?" : ""}
+    ORDER BY t.sent_date DESC
   `).all(...(projectId ? [projectId] : []));
 }
 
