@@ -1,0 +1,69 @@
+.homePage {
+  padding: 40px 32px;
+  min-height: 100%;
+  background: linear-gradient(180deg, #f0f2f5 0%, #e8eaf0 100%);
+}
+
+.homeGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+  max-width: 960px;
+  margin: 0 auto;
+}
+
+.moduleCard {
+  background: white;
+  border: 1.5px solid #e8e8f0;
+  border-radius: 12px;
+  padding: 36px 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  text-decoration: none;
+  min-height: 200px;
+}
+
+.moduleCard:hover {
+  border-color: var(--accent-purple);
+  box-shadow: 0 8px 30px rgba(124, 92, 252, 0.1);
+  transform: translateY(-3px);
+}
+
+.moduleIcon {
+  width: 72px;
+  height: 72px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #1a0a3e;
+}
+
+.moduleIcon svg {
+  width: 56px;
+  height: 56px;
+  stroke-width: 1;
+}
+
+.moduleLabel {
+  font-size: 13px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  color: #1a0a3e;
+  text-align: center;
+}
+
+@media (max-width: 768px) {
+  .homeGrid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+  }
+  .homePage {
+    padding: 24px 16px;
+  }
+}

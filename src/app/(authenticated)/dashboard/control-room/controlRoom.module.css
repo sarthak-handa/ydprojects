@@ -1,0 +1,287 @@
+.controlRoom {
+  padding: 0;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.toolbar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 20px;
+  background: white;
+  border-bottom: 1px solid var(--border-light);
+}
+
+.tabBtn {
+  padding: 6px 16px;
+  border: none;
+  background: none;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  color: var(--text-secondary);
+  border-bottom: 2px solid transparent;
+  transition: all var(--transition-fast);
+  font-family: var(--font-primary);
+}
+
+.tabBtn.active {
+  color: var(--accent-purple);
+  border-bottom-color: var(--accent-purple);
+}
+
+.filterBar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 20px;
+  background: white;
+  border-bottom: 1px solid var(--border-light);
+  flex-wrap: wrap;
+}
+
+.contextBar {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding: 10px 20px;
+  background: white;
+  border-bottom: 1px solid var(--border-light);
+  font-size: 13px;
+}
+
+.contextLabel {
+  font-weight: 700;
+  color: var(--text-secondary);
+}
+
+.contextValue {
+  font-weight: 500;
+}
+
+.mainContent {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+}
+
+.projectList {
+  width: 360px;
+  background: white;
+  border-right: 1px solid var(--border-light);
+  overflow-y: auto;
+  flex-shrink: 0;
+}
+
+.divisionHeader {
+  padding: 10px 16px;
+  background: var(--bg-primary);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid var(--border-light);
+}
+
+.projectCard {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  border-bottom: 1px solid #f0f0f0;
+  cursor: pointer;
+  transition: background var(--transition-fast);
+}
+
+.projectCard:hover {
+  background: var(--bg-card-hover);
+}
+
+.projectCard.selected {
+  background: rgba(124, 92, 252, 0.06);
+  border-left: 3px solid var(--accent-purple);
+}
+
+.projectIndex {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  font-weight: 700;
+  color: white;
+  flex-shrink: 0;
+}
+
+.projectIndex.red { background: var(--status-red); }
+.projectIndex.green { background: #1a0a3e; }
+.projectIndex.yellow { background: var(--status-yellow); }
+
+.projectInfo {
+  flex: 1;
+  min-width: 0;
+}
+
+.projectName {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.projectPM {
+  font-size: 11px;
+  color: var(--text-secondary);
+  margin-top: 2px;
+}
+
+.statusPin {
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--accent-teal);
+}
+
+.timelineArea {
+  flex: 1;
+  overflow-x: auto;
+  overflow-y: auto;
+  position: relative;
+  background: #fafbfc;
+}
+
+.timelineHeader {
+  display: flex;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: #f5f6f8;
+  border-bottom: 1px solid var(--border-light);
+}
+
+.yearBlock {
+  flex: 0 0 300px;
+  padding: 8px 0;
+  text-align: center;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  border-right: 1px solid #e8e8e8;
+}
+
+.todayLine {
+  position: absolute;
+  width: 2px;
+  top: 0;
+  bottom: 0;
+  background: var(--accent-teal);
+  z-index: 5;
+  opacity: 0.6;
+}
+
+.todayLabel {
+  position: absolute;
+  top: 2px;
+  transform: translateX(-50%);
+  z-index: 6;
+}
+
+.ganttRow {
+  display: flex;
+  align-items: center;
+  height: 50px;
+  position: relative;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.ganttBar {
+  position: absolute;
+  height: 24px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  padding: 0 8px;
+  font-size: 11px;
+  color: white;
+  font-weight: 600;
+  min-width: 60px;
+}
+
+.ganttBarProgress {
+  background: #333;
+  border-radius: 4px;
+}
+
+.ganttBarGreen {
+  background: repeating-linear-gradient(
+    45deg,
+    #4caf50,
+    #4caf50 3px,
+    #66bb6a 3px,
+    #66bb6a 6px
+  );
+}
+
+.ganttBarRed {
+  background: repeating-linear-gradient(
+    45deg,
+    #e53935,
+    #e53935 3px,
+    #ef5350 3px,
+    #ef5350 6px
+  );
+}
+
+.progressLabel {
+  position: absolute;
+  left: -44px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+.milestone {
+  width: 16px;
+  height: 16px;
+  transform: rotate(45deg);
+  position: absolute;
+}
+
+.milestone.red { background: var(--status-red); }
+.milestone.green { background: var(--status-green); }
+
+.toolbarRight {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-left: auto;
+}
+
+.iconBtn {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  background: none;
+  cursor: pointer;
+  color: var(--text-secondary);
+  border-radius: 4px;
+  transition: all var(--transition-fast);
+}
+
+.iconBtn:hover {
+  background: var(--bg-primary);
+  color: var(--text-primary);
+}
