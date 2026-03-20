@@ -117,8 +117,8 @@ export default function Sidebar({ collapsed, onToggle }: SidebarProps) {
         {!collapsed && (
           <div className={styles.logo}>
             <Image src="/YDLOGO.png" alt="Yogiji Digi" className={styles.logoImg} width={132} height={36} priority />
-            <div className={styles.brandText}>YOGIJI DIGI</div>
-            <div className={styles.brandTagline}>Perpetual Innovation</div>
+            <div className={styles.brandText}></div>
+            <div className={styles.brandTagline}></div>
           </div>
         )}
         {collapsed && (

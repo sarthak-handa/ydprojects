@@ -48,8 +48,8 @@ export default function LoginPage() {
           <div className={styles.loginBrand}>
             <Image src="/YDLOGO.png" alt="Yogiji Digi" className={styles.logoImage} width={220} height={64} priority />
           </div>
-          <div className={styles.companyTitle}>YOGIJI DIGI</div>
-          <div className={styles.companySubtitle}>Perpetual Innovation</div>
+          <div className={styles.companyTitle}></div>
+          <div className={styles.companySubtitle}></div>
         </div>
 
         <form onSubmit={handleSubmit}>
