@@ -4,7 +4,7 @@
   top: 0;
   bottom: 0;
   width: var(--sidebar-width);
-  background: linear-gradient(180deg, #0f0525 0%, #1a0a3e 30%, #1e0e45 100%);
+  background: linear-gradient(180deg, #1f1f1f 0%, #2a2a2a 30%, #303030 100%);
   color: var(--sidebar-text);
   display: flex;
   flex-direction: column;
@@ -29,7 +29,27 @@
 .logo {
   display: flex;
   flex-direction: column;
-  gap: 0;
+  gap: 2px;
+}
+
+.logoImg {
+  width: 132px;
+  height: 36px;
+  object-fit: contain;
+  object-position: left center;
+}
+
+.brandText {
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 0.16em;
+  color: #ffffff;
+}
+
+.brandTagline {
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  color: rgba(255, 255, 255, 0.6);
 }
 
 .logoTop {
@@ -59,8 +79,8 @@
   height: 28px;
   border-radius: 50%;
   border: none;
-  background: rgba(124, 92, 252, 0.2);
-  color: var(--accent-purple);
+  background: rgba(178, 34, 52, 0.2);
+  color: var(--sidebar-accent);
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -70,7 +90,7 @@
 }
 
 .collapseBtn:hover {
-  background: rgba(124, 92, 252, 0.4);
+  background: rgba(178, 34, 52, 0.4);
 }
 
 .navContainer {
@@ -102,9 +122,9 @@
 }
 
 .navItem.active {
-  background: rgba(124, 92, 252, 0.15);
+  background: rgba(178, 34, 52, 0.15);
   color: var(--sidebar-text-active);
-  border-left-color: var(--accent-purple);
+  border-left-color: var(--sidebar-accent);
 }
 
 .navItemIcon {
@@ -163,9 +183,9 @@
 }
 
 .subNavItem.active {
-  color: var(--accent-purple);
-  background: rgba(124, 92, 252, 0.1);
-  border-left-color: var(--accent-purple);
+  color: var(--sidebar-accent);
+  background: rgba(178, 34, 52, 0.1);
+  border-left-color: var(--sidebar-accent);
 }
 
 .subNavIcon {

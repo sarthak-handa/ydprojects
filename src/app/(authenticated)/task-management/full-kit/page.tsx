@@ -1,58 +1,60 @@
-'use client';
-
-import React from 'react';
-import { fullKits } from '@/data/mockData';
-import { XCircle, CheckCircle, Plus } from 'lucide-react';
+import styles from "@/components/project-management/projectManagement.module.css";
+import { getFullKitStatus, getProjects } from "@/lib/database";
 
 export default function FullKitPage() {
-  return (
-    <div style={{ minHeight: '100%' }}>
-      <div style={{
-        display: 'flex', alignItems: 'center', gap: 12,
-        padding: '10px 20px', background: 'white', borderBottom: '1px solid var(--border-light)'
-      }}>
-        <span className="chip">Horizon (1) ×</span>
-        <span className="chip">Project (1) ×</span>
-        <span className="chip">Manager (1) ×</span>
-        <span className="chip">Status (1) ×</span>
-        <button className="btn btn-primary" style={{ marginLeft: 'auto' }}>
-          <Plus size={14} /> Create Fullkit
-        </button>
-      </div>
+  const projects = getProjects() as Array<Record<string, unknown>>;
+  const project = projects[0];
+  const assemblies = project ? (getFullKitStatus(Number(project.id)) as Array<Record<string, unknown>>) : [];
 
-      <div style={{ padding: 20 }}>
-        {fullKits.map(kit => (
-          <div key={kit.id} style={{
-            background: 'white', borderRadius: 8, padding: 16,
-            boxShadow: 'var(--shadow-card)', marginBottom: 12,
-            display: 'flex', alignItems: 'center', gap: 16,
-            borderLeft: `4px solid ${kit.populated ? 'var(--status-green)' : 'var(--status-red)'}`,
-          }}>
-            <div style={{ fontSize: 28, color: '#666' }}>🏭</div>
-            <div style={{ flex: 1 }}>
-              <div style={{ fontSize: 15, fontWeight: 700, textTransform: 'uppercase', marginBottom: 4 }}>
-                STEP TYPE {kit.stepType}
+  return (
+    <div className={styles.page}>
+      <section className={styles.hero}>
+        <div>
+          <div className={styles.heroTitle}>Full Kit Status</div>
+          <div className={styles.heroMeta}>
+            <span>
+              {project
+                ? `${String(project.code)} · ${String(project.name)}`
+                : "No project available"}
+            </span>
+            <span>Assembly is ready only when every component is present.</span>
+          </div>
+        </div>
+      </section>
+
+      <section className={styles.stack}>
+        {assemblies.map((assembly) => (
+          <div key={String(assembly.id)} className={styles.panel}>
+            <div className={styles.panelHeader}>
+              <div>
+                <div className={styles.panelTitle}>{String(assembly.assembly_name)}</div>
+                <div className={styles.panelSubtext}>{String(assembly.category_name)}</div>
               </div>
-              <div style={{ fontSize: 12, color: 'var(--text-secondary)' }}>
-                of {kit.task}
-              </div>
-              <div style={{ fontSize: 11, color: 'var(--text-secondary)', marginTop: 2 }}>
-                Fullkit Manager: <span style={{ textDecoration: 'underline' }}>{kit.manager}</span>
+              <div>
+                <strong>
+                  {Number(assembly.arrived_components ?? 0)}/
+                  {Number(assembly.total_components ?? 0)} components arrived
+                </strong>
               </div>
             </div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 13 }}>
-              {kit.populated ? (
-                <><CheckCircle size={20} color="var(--status-green)" /> Full kit populated</>
-              ) : (
-                <><XCircle size={20} color="#999" /> Full kit is not populated yet</>
-              )}
+            <div style={{ height: 12, background: "#ececec", borderRadius: 999, overflow: "hidden" }}>
+              <div
+                style={{
+                  width: `${Number(assembly.readiness_percent)}%`,
+                  height: "100%",
+                  background:
+                    Number(assembly.readiness_percent) === 100 ? "#2f7d32" : "#b22234",
+                }}
+              />
+            </div>
+            <div style={{ marginTop: 10 }} className={styles.panelSubtext}>
+              {assembly.full_kit_ready
+                ? "Full Kit Ready"
+                : `Missing: ${(assembly.missing_components as string[]).join(", ")}`}
             </div>
           </div>
         ))}
-        <div style={{ textAlign: 'center', color: 'var(--text-secondary)', fontSize: 13, padding: 20 }}>
-          --- End of List ---
-        </div>
-      </div>
+      </section>
     </div>
   );
 }

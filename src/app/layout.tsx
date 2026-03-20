@@ -3,8 +3,11 @@ import './globals.css';
 import { AuthProvider } from '@/contexts/AuthContext';
 
 export const metadata: Metadata = {
-  title: 'Streamliner - Project Control Room',
-  description: 'Enterprise Project Management Platform powered by Realization',
+  title: 'Yogiji Digi - Project Control Room',
+  description: 'Yogiji Digi project management platform for BOM, orders, payments, planning, and full-kit readiness.',
+  icons: {
+    icon: '/logo-icon.png',
+  },
 };
 
 export default function RootLayout({

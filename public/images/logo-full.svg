@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 60" fill="none">
+  <!-- Y-shaped geometric logo mark -->
+  <g transform="translate(5, 5)">
+    <!-- Back gray block -->
+    <polygon points="8,12 20,0 20,20 8,32" fill="#8C8C8C"/>
+    <polygon points="20,0 32,12 32,32 20,20" fill="#6B6B6B"/>
+    <polygon points="8,32 20,20 32,32 20,44" fill="#A0A0A0"/>
+    <!-- Front red block -->
+    <polygon points="18,18 30,6 30,26 18,38" fill="#B22234"/>
+    <polygon points="30,6 42,18 42,38 30,26" fill="#8B1A28"/>
+    <polygon points="18,38 30,26 42,38 30,50" fill="#D4343F"/>
+    <!-- Inner gray block -->
+    <polygon points="14,28 22,20 22,32 14,40" fill="#C0C0C0"/>
+  </g>
+  <!-- Text -->
+  <text x="58" y="24" font-family="Arial, sans-serif" font-size="20" font-weight="800" fill="#4A4A4A">YOGIJI</text>
+  <text x="58" y="48" font-family="Arial, sans-serif" font-size="20" font-weight="800">
+    <tspan fill="#4A4A4A">DI</tspan><tspan fill="#B22234">GI</tspan>
+  </text>
+  <!-- Divider line -->
+  <line x1="55" y1="5" x2="55" y2="55" stroke="#D4D4D4" stroke-width="1"/>
+</svg>

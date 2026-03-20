@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useCallback } from 'react';
+import Image from 'next/image';
 import { usePathname, useRouter } from 'next/navigation';
 import {
   Home, LayoutDashboard, Menu, Grid3X3, User, TrendingUp, BarChart3,
@@ -8,7 +9,8 @@ import {
   FileText, GitBranch, CheckSquare, ClipboardCheck, Briefcase, CheckCircle,
   AlertTriangle, AlertCircle, FolderOpen, File as FileIcon, UserCog, Building,
   UserPlus, Settings, ChevronDown, ChevronLeft, ChevronRight,
-  Mail, HelpCircle, Link as LinkIcon, ArrowDownLeft, ArrowUpRight, LineChart
+  Mail, HelpCircle, Link as LinkIcon, ArrowDownLeft, ArrowUpRight, LineChart,
+  Truck, Siren
 } from 'lucide-react';
 import { navigationItems, NavItem } from '@/data/navigation';
 import styles from './Sidebar.module.css';
@@ -19,6 +21,7 @@ const iconMap: Record<string, React.ComponentType<{ size?: number }>> = {
   FileText, GitBranch, CheckSquare, ClipboardCheck, Briefcase, CheckCircle,
   AlertTriangle, AlertCircle, FolderOpen, File: FileIcon, UserCog, Building,
   UserPlus, Settings, ArrowDownLeft, ArrowUpRight, LineChart,
+  Truck, Siren,
 };
 
 interface SidebarProps {
@@ -113,9 +116,13 @@ export default function Sidebar({ collapsed, onToggle }: SidebarProps) {
       <div className={styles.sidebarHeader}>
         {!collapsed && (
           <div className={styles.logo}>
-            <span className={styles.logoTop}>POWERED BY</span>
-            <span className={styles.logoText}>REALIZATION<span className={styles.flag}>🇮🇳</span></span>
+            <Image src="/logo-full.png" alt="Yogiji Digi" className={styles.logoImg} width={132} height={36} priority />
+            <div className={styles.brandText}>YOGIJI DIGI</div>
+            <div className={styles.brandTagline}>Perpetual Innovation</div>
           </div>
+        )}
+        {collapsed && (
+          <Image src="/logo-icon.png" alt="YD" width={28} height={28} priority />
         )}
         <button className={styles.collapseBtn} onClick={onToggle}>
           {collapsed ? <ChevronRight size={14} /> : <ChevronLeft size={14} />}
@@ -127,7 +134,7 @@ export default function Sidebar({ collapsed, onToggle }: SidebarProps) {
       </nav>
 
       <div className={styles.sidebarFooter}>
-        {!collapsed && <span className={styles.versionText}>Version: 3.9.4</span>}
+        {!collapsed && <span className={styles.versionText}>Yogiji Digi v1.0</span>}
         <div className={styles.footerIcons}>
           <div className={styles.footerIcon}><Mail size={14} /></div>
           <div className={styles.footerIcon}><HelpCircle size={14} /></div>

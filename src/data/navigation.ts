@@ -35,6 +35,7 @@ export const navigationItems: NavItem[] = [
       },
       { id: 'resource', label: 'Resource', icon: 'Users', href: '/dashboard/resource' },
       { id: 'material', label: 'Material', icon: 'HardHat', href: '/dashboard/material' },
+      { id: 'orders', label: 'Orders', icon: 'Truck', href: '/orders' },
       { id: 'custom', label: 'Custom', icon: 'CircleDot', href: '/dashboard/custom' },
       { id: 'metrics', label: 'Metrics', icon: 'Gauge', href: '/dashboard/metrics' },
     ],
@@ -76,6 +77,7 @@ export const navigationItems: NavItem[] = [
     icon: 'AlertTriangle',
     children: [
       { id: 'issues', label: 'Issues', icon: 'AlertCircle', href: '/issue-management' },
+      { id: 'red-flags', label: 'Red Flags', icon: 'Siren', href: '/red-flags' },
     ],
   },
   {

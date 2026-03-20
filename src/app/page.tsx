@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
+import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
 import styles from './login.module.css';
@@ -45,11 +46,10 @@ export default function LoginPage() {
       <div className={styles.loginCard}>
         <div className={styles.loginLogoSection}>
           <div className={styles.loginBrand}>
-            <span className={styles.streamlinerLogo}>streamliner</span>
+            <Image src="/logo-full.png" alt="Yogiji Digi" className={styles.logoImage} width={220} height={64} priority />
           </div>
-          <div className={styles.companyBadge}>
-            YOGIJI DIGI
-          </div>
+          <div className={styles.companyTitle}>YOGIJI DIGI</div>
+          <div className={styles.companySubtitle}>Perpetual Innovation</div>
         </div>
 
         <form onSubmit={handleSubmit}>

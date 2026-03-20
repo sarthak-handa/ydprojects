@@ -3,7 +3,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, #0f0525 0%, #1a0a3e 40%, #2d1b69 100%);
+  background: linear-gradient(135deg, #2a2a2a 0%, #3a3a3a 42%, #b22234 100%);
   position: relative;
   overflow: hidden;
 }
@@ -15,7 +15,7 @@
   right: -30%;
   width: 80%;
   height: 200%;
-  background: radial-gradient(ellipse, rgba(124, 92, 252, 0.08) 0%, transparent 70%);
+  background: radial-gradient(ellipse, rgba(212, 212, 212, 0.12) 0%, transparent 70%);
   pointer-events: none;
 }
 
@@ -39,31 +39,28 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
-  margin-bottom: 8px;
+  margin-bottom: 10px;
 }
 
-.streamlinerLogo {
-  font-size: 28px;
+.logoImage {
+  width: 220px;
+  height: 64px;
+  object-fit: contain;
+}
+
+.companyTitle {
+  font-size: 14px;
   font-weight: 800;
-  background: linear-gradient(90deg, #7c5cfc, #0db4b9);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  letter-spacing: 2px;
+  letter-spacing: 0.24em;
+  color: #4a4a4a;
 }
 
-.companyBadge {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  background: linear-gradient(135deg, #1a0a3e, #2d1b69);
-  color: white;
-  padding: 6px 16px;
-  border-radius: 20px;
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 1.5px;
+.companySubtitle {
   margin-top: 8px;
+  color: #8b2230;
+  font-size: 12px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
 }
 
 .formGroup {
@@ -93,13 +90,13 @@
 
 .formInput:focus {
   border-color: var(--accent-purple);
-  box-shadow: 0 0 0 3px rgba(124, 92, 252, 0.1);
+  box-shadow: 0 0 0 3px rgba(178, 34, 52, 0.12);
 }
 
 .loginBtn {
   width: 100%;
   padding: 14px;
-  background: linear-gradient(135deg, #7c5cfc, #6a4de6);
+  background: linear-gradient(135deg, #b22234, #8c1d2b);
   color: white;
   border: none;
   border-radius: 8px;
@@ -113,9 +110,9 @@
 }
 
 .loginBtn:hover {
-  background: linear-gradient(135deg, #6a4de6, #5a3dd6);
+  background: linear-gradient(135deg, #9b1f2f, #6d1822);
   transform: translateY(-1px);
-  box-shadow: 0 4px 15px rgba(124, 92, 252, 0.3);
+  box-shadow: 0 4px 15px rgba(178, 34, 52, 0.3);
 }
 
 .loginBtn:active {

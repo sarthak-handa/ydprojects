@@ -1,24 +1,24 @@
-/* ===== STREAMLINER DESIGN SYSTEM ===== */
+/* ===== YOGIJI DIGI DESIGN SYSTEM ===== */
 
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Roboto:wght@300;400;500;700&display=swap');
 
 :root {
-  /* Primary - Dark Purple Sidebar */
-  --sidebar-bg: #1a0a3e;
-  --sidebar-bg-hover: #2d1b69;
-  --sidebar-text: #b8b0d0;
+  /* Primary - Yogiji Digi Dark Gray Sidebar */
+  --sidebar-bg: #2a2a2a;
+  --sidebar-bg-hover: #3d3d3d;
+  --sidebar-text: #b0b0b0;
   --sidebar-text-active: #ffffff;
-  --sidebar-accent: #7c5cfc;
+  --sidebar-accent: #B22234;
   --sidebar-width: 260px;
   --sidebar-collapsed-width: 60px;
 
   /* Top Bar */
-  --topbar-bg: #1a0a3e;
+  --topbar-bg: #2a2a2a;
   --topbar-height: 48px;
 
   /* Accent Colors */
   --accent-teal: #0db4b9;
-  --accent-purple: #7c5cfc;
+  --accent-purple: #B22234;
   --accent-orange: #ff6b35;
 
   /* Status Colors */
@@ -140,7 +140,7 @@ html, body {
   transition: all var(--transition-fast);
 }
 .chip:hover {
-  background: rgba(124, 92, 252, 0.08);
+  background: rgba(178, 34, 52, 0.08);
 }
 .chip .close {
   font-size: 14px;
@@ -167,7 +167,7 @@ html, body {
   color: white;
 }
 .btn-primary:hover {
-  background: #6a4de6;
+  background: #8B1A28;
 }
 .btn-outline {
   background: transparent;
@@ -240,7 +240,7 @@ html, body {
   width: 40px;
   height: 40px;
   border: 3px solid var(--border-light);
-  border-top-color: var(--accent-purple);
+  border-top-color: var(--sidebar-accent);
   border-radius: 50%;
   animation: spin 0.8s linear infinite;
 }
