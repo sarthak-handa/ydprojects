@@ -22,6 +22,19 @@ type IdRow = { id: number };
 
 let dbInstance: Database.Database | null = null;
 
+function tableHasColumn(db: Database.Database, tableName: string, columnName: string) {
+  const columns = db.prepare(`PRAGMA table_info(${tableName})`).all() as Array<{
+    name: string;
+  }>;
+  return columns.some((column) => column.name === columnName);
+}
+
+function runMigrations(db: Database.Database) {
+  if (!tableHasColumn(db, "transmittals", "remarks")) {
+    db.exec("ALTER TABLE transmittals ADD COLUMN remarks TEXT");
+  }
+}
+
 function ensureDatabase() {
   if (dbInstance) {
     return dbInstance;
@@ -150,6 +163,7 @@ function ensureDatabase() {
       document_count INTEGER NOT NULL,
       sent_date TEXT NOT NULL,
       status TEXT NOT NULL,
+      remarks TEXT,
       FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE CASCADE
     );
     CREATE TABLE IF NOT EXISTS wbs_rows (
@@ -191,6 +205,7 @@ function ensureDatabase() {
     );
   `);
 
+  runMigrations(db);
   seedDatabase(db);
   dbInstance = db;
   return db;
