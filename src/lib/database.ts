@@ -150,8 +150,30 @@ function ensureDatabase() {
       document_count INTEGER NOT NULL,
       sent_date TEXT NOT NULL,
       status TEXT NOT NULL,
-      remarks TEXT,
       FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE CASCADE
+    );
+    CREATE TABLE IF NOT EXISTS wbs_rows (
+      id TEXT PRIMARY KEY, /* UUID */
+      project_id TEXT NOT NULL, /* FK to projects.id currently integers but stored as text */
+      wbs_id TEXT NOT NULL,
+      task_id TEXT,
+      name TEXT NOT NULL,
+      type TEXT NOT NULL,
+      duration TEXT,
+      status TEXT,
+      predecessor TEXT,
+      successor TEXT,
+      ready TEXT,
+      planned_start TEXT,
+      planned_end TEXT,
+      act_start TEXT,
+      act_end TEXT,
+      sugg_start TEXT,
+      sugg_end TEXT,
+      manager TEXT,
+      department TEXT,
+      raw_data TEXT NOT NULL,
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP
     );
   `);
 
@@ -285,7 +307,7 @@ function seedDatabase(db: Database.Database) {
   seed();
 }
 
-function database() {
+export function database() {
   return ensureDatabase();
 }
 

@@ -15,6 +15,7 @@ export default function ProjectDataActions({
   async function handleImport(file: File) {
     const formData = new FormData();
     formData.append("file", file);
+    formData.append("projectId", String(projectId));
     setIsImporting(true);
     await fetch("/api/import", {
       method: "POST",

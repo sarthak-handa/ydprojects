@@ -1,42 +1,23 @@
-import { NextResponse } from "next/server";
-import { getProjectBom, upsertBomComponent } from "@/lib/database";
+import { NextResponse } from 'next/server';
+import { database } from '@/lib/database';
 
-export const runtime = "nodejs";
+export async function GET(request: Request, context: { params: Promise<{ id: string }> }) {
+  const db = database();
+  try {
+    const { id } = await context.params;
+    // Get all WBS rows for the project, ordered by the original Excel row index if possible 
+    // or by wbs_id to maintain hierarchy
+    const rows = db.prepare('SELECT * FROM wbs_rows WHERE project_id = ? ORDER BY id ASC').all(id);
+    
+    // Parse the raw_data JSON for each row so the frontend can use the properties directly
+    const parsedRows = rows.map((row: any) => ({
+      ...row,
+      raw_data: JSON.parse(row.raw_data)
+    }));
 
-export async function GET(
-  _request: Request,
-  context: { params: Promise<{ id: string }> },
-) {
-  const { id } = await context.params;
-  return NextResponse.json({
-    bom: getProjectBom(Number(id)),
-  });
-}
-
-export async function POST(
-  request: Request,
-  context: { params: Promise<{ id: string }> },
-) {
-  const { id } = await context.params;
-  const body = await request.json();
-  const component = upsertBomComponent(Number(id), {
-    id: body.id ? Number(body.id) : undefined,
-    assemblyId: Number(body.assemblyId),
-    subassemblyId: Number(body.subassemblyId),
-    name: String(body.name),
-    drawingNumber: String(body.drawingNumber),
-    quantity: Number(body.quantity),
-    material: String(body.material),
-    weight: Number(body.weight),
-    vendorName: String(body.vendorName),
-    poNumber: String(body.poNumber),
-    unitPrice: Number(body.unitPrice),
-    orderStatus: body.orderStatus,
-    orderDate: body.orderDate ?? null,
-    expectedArrival: body.expectedArrival ?? null,
-    arrivalDate: body.arrivalDate ?? null,
-    dispatchDate: body.dispatchDate ?? null,
-  });
-
-  return NextResponse.json({ component }, { status: 201 });
+    return NextResponse.json(parsedRows);
+  } catch (error: any) {
+    console.error('Error fetching BOM data:', error);
+    return NextResponse.json({ error: 'Failed to fetch BOM data', details: error.message }, { status: 500 });
+  }
 }

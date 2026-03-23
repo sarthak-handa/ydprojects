@@ -1,0 +1,7 @@
+.next/dev/types/validator.ts(432,31): error TS2344: Type 'typeof import("C:/Users/sarthak/Project Automation/streamliner-app/src/app/api/projects/[id]/bom/route")' does not satisfy the constraint 'RouteHandlerConfig<"/api/projects/[id]/bom">'.
+  Types of property 'GET' are incompatible.
+    Type '(request: Request, { params }: { params: { id: string; }; }) => Promise<NextResponse<any[]> | NextResponse<{ error: string; details: any; }>>' is not assignable to type '(request: NextRequest, context: { params: Promise<{ id: string; }>; }) => void | Response | Promise<void | Response>'.
+      Types of parameters '__1' and 'context' are incompatible.
+        Type '{ params: Promise<{ id: string; }>; }' is not assignable to type '{ params: { id: string; }; }'.
+          Types of property 'params' are incompatible.
+            Property 'id' is missing in type 'Promise<{ id: string; }>' but required in type '{ id: string; }'.

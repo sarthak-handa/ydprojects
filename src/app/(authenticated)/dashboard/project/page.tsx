@@ -4,6 +4,8 @@ import styles from "@/components/project-management/projectManagement.module.css
 import { getProjects } from "@/lib/database";
 import { formatCurrency, formatDate } from "@/lib/format";
 
+export const dynamic = 'force-dynamic';
+
 export default function ProjectDashboardPage() {
   const projects = getProjects() as Array<Record<string, number | string>>;
   const featured = projects[0];

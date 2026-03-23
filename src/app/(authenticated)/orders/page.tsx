@@ -1,51 +1,142 @@
-import styles from "@/components/project-management/projectManagement.module.css";
-import { getOrders } from "@/lib/database";
-import { formatCurrency, formatDate } from "@/lib/format";
+"use client";
 
-const columns = ["Pending", "Ordered", "In Transit", "Arrived", "Dispatched"];
+import React, { useEffect, useState } from "react";
+import { Package, Truck, CheckCircle, Clock, TruckIcon, Search } from "lucide-react";
+import styles from "./orders.module.css";
+import Link from "next/link";
+
+type OrderRow = {
+  id: string;
+  project_code: string;
+  assembly_name: string;
+  component_name: string;
+  po_number: string;
+  vendor_name: string;
+  order_status: string;
+  quantity: number;
+  total_price: number;
+  expected_arrival: string;
+};
 
 export default function OrdersPage() {
-  const orders = getOrders() as Array<Record<string, unknown>>;
+  const [orders, setOrders] = useState<OrderRow[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function fetchOrders() {
+      try {
+        const res = await fetch("/api/orders");
+        const data = await res.json();
+        setOrders(data);
+      } catch (err) {
+        console.error("Failed to load orders");
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchOrders();
+  }, []);
+
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case "Pending": return "var(--status-dark-red)";
+      case "Ordered": return "var(--status-yellow)";
+      case "In Transit": return "var(--status-blue)";
+      case "Arrived": return "var(--status-green)";
+      case "Dispatched": return "var(--status-deep-green)";
+      default: return "var(--text-muted)";
+    }
+  };
+
+  const pending = orders.filter((o) => o.order_status === "Pending");
+  const ordered = orders.filter((o) => o.order_status === "Ordered" || o.order_status === "In Transit");
+  const arrived = orders.filter((o) => o.order_status === "Arrived");
+  const dispatched = orders.filter((o) => o.order_status === "Dispatched");
+
+  if (loading) return <div className="loading-spinner" />;
 
   return (
     <div className={styles.page}>
-      <section className={styles.hero}>
-        <div>
-          <div className={styles.heroTitle}>Order & Dispatch Tracking</div>
-          <div className={styles.heroMeta}>
-            <span>Live PO, vendor, expected arrival, and dispatch visibility.</span>
-            <span>Inventory pressure warnings surface where dispatch is lagging.</span>
+      <div className={styles.header}>
+        <h1 className={styles.title}>Order & Dispatch Tracking</h1>
+        <p className={styles.subtitle}>Manage material flow from procurement to factory arrival and site dispatch.</p>
+      </div>
+
+      <div className={styles.kanbanBoard}>
+        {/* Pending Column */}
+        <div className={styles.column}>
+          <div className={styles.columnHeader}>
+            <Clock size={16} /> Pending ({pending.length})
+          </div>
+          <div className={styles.columnBody}>
+            {pending.map((o) => (
+              <OrderCard key={o.id} order={o} color={getStatusColor("Pending")} />
+            ))}
+            {pending.length === 0 && <div className={styles.emptyCol}>No pending items</div>}
           </div>
         </div>
-      </section>
 
-      <section className={styles.kanban}>
-        {columns.map((column) => (
-          <div key={column} className={styles.kanbanCol}>
-            <strong>{column}</strong>
-            {orders
-              .filter((order) => order.order_status === column)
-              .map((order) => (
-                <div key={String(order.id)} className={styles.kanbanCard}>
-                  <strong>{String(order.component_name)}</strong>
-                  <div className={styles.panelSubtext}>
-                    {String(order.project_code)} · {String(order.vendor_name)}
-                  </div>
-                  <div className={styles.panelSubtext}>PO {String(order.po_number)}</div>
-                  <div className={styles.panelSubtext}>
-                    Expected {formatDate(String(order.expected_arrival ?? ""))}
-                  </div>
-                  <div className={styles.panelSubtext}>
-                    Value {formatCurrency(Number(order.total_price))}
-                  </div>
-                  {column === "Ordered" || column === "In Transit" ? (
-                    <div className={styles.pill}>Factory inventory watch</div>
-                  ) : null}
-                </div>
-              ))}
+        {/* Ordered / Transit Column */}
+        <div className={styles.column}>
+          <div className={styles.columnHeader}>
+            <Truck size={16} /> Ordered / Transit ({ordered.length})
           </div>
-        ))}
-      </section>
+          <div className={styles.columnBody}>
+            {ordered.map((o) => (
+              <OrderCard key={o.id} order={o} color={getStatusColor("Ordered")} />
+            ))}
+            {ordered.length === 0 && <div className={styles.emptyCol}>No active orders</div>}
+          </div>
+        </div>
+
+        {/* Arrived (Factory) Column */}
+        <div className={styles.column}>
+          <div className={styles.columnHeader}>
+            <Package size={16} /> Arrived at Factory ({arrived.length})
+          </div>
+          <div className={styles.columnBody}>
+            {arrived.map((o) => (
+              <OrderCard key={o.id} order={o} color={getStatusColor("Arrived")} />
+            ))}
+            {arrived.length === 0 && <div className={styles.emptyCol}>No items at factory</div>}
+          </div>
+        </div>
+
+        {/* Dispatched Column */}
+        <div className={styles.column}>
+          <div className={styles.columnHeader}>
+            <TruckIcon size={16} /> Dispatched to Site ({dispatched.length})
+          </div>
+          <div className={styles.columnBody}>
+            {dispatched.map((o) => (
+              <OrderCard key={o.id} order={o} color={getStatusColor("Dispatched")} />
+            ))}
+            {dispatched.length === 0 && <div className={styles.emptyCol}>No dispatched items</div>}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function OrderCard({ order, color }: { order: OrderRow; color: string }) {
+  return (
+    <div className={styles.card}>
+      <div className={styles.cardHeader}>
+        <span className={styles.projectCode}>{order.project_code}</span>
+        <span className={styles.statusDot} style={{ backgroundColor: color }} />
+      </div>
+      <div className={styles.cardBody}>
+        <div className={styles.componentName}>{order.component_name}</div>
+        <div className={styles.assemblyName}>{order.assembly_name}</div>
+        <div className={styles.poRow}>
+          <span>PO: {order.po_number || "TBD"}</span>
+          <span>{order.vendor_name || "Unassigned"}</span>
+        </div>
+        <div className={styles.expectedRow}>
+          Exp: {order.expected_arrival || "N/A"}
+        </div>
+      </div>
     </div>
   );
 }

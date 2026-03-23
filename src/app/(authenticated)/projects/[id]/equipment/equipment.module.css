@@ -1,0 +1,189 @@
+.page {
+  padding: 32px;
+  height: 100%;
+  overflow-y: auto;
+  background: var(--bg-primary);
+}
+
+.header {
+  margin-bottom: 24px;
+}
+
+.backBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--sidebar-accent);
+  text-decoration: none;
+  font-weight: 500;
+  font-size: 13px;
+  margin-bottom: 12px;
+}
+
+.title {
+  font-size: 24px;
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+
+.subtitle {
+  color: var(--text-secondary);
+  font-size: 14px;
+}
+
+.treeContainer {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  background: white;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-light);
+  overflow: hidden;
+}
+
+.treeHeader {
+  display: flex;
+  align-items: center;
+  background: #f8f9fa;
+  border-bottom: 1px solid var(--border-light);
+  font-weight: 600;
+  font-size: 12px;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.treeRow {
+  display: flex;
+  align-items: center;
+  border-bottom: 1px solid var(--border-light);
+  transition: background var(--transition-fast);
+  font-size: 13px;
+}
+
+.treeRow:hover {
+  background: #fcfcfc;
+}
+
+.level0 { font-weight: 700; background: #fafafa; }
+.level1 { font-weight: 600; }
+.level2 { font-weight: 500; }
+.level3 { font-weight: 400; color: var(--text-secondary); }
+
+.materialRow {
+  background: #fff;
+}
+
+/* Cells */
+.treeCellName {
+  flex: 1;
+  min-width: 300px;
+  padding: 12px 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.treeCellStatus, .treeCellDuration, .treeCellDate, .treeCellMetric {
+  padding: 12px 16px;
+  min-width: 120px;
+}
+
+.treeCellStatus { min-width: 100px; }
+.treeCellDuration { min-width: 80px; }
+.treeCellMetric { text-align: right; font-variant-numeric: tabular-nums; }
+
+.expandBtn {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2px;
+  border-radius: 4px;
+  color: var(--text-secondary);
+}
+
+.expandBtn:hover {
+  background: rgba(0,0,0,0.05);
+}
+
+.expandPlaceholder {
+  width: 20px;
+}
+
+.nodeIcon {
+  color: var(--sidebar-accent);
+}
+
+.materialIcon {
+  color: var(--text-muted);
+}
+
+.nodeWbs {
+  font-family: monospace;
+  font-size: 12px;
+  color: var(--text-secondary);
+  background: #f0f0f0;
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+.nodeName {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.statusBadge {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.emptyState {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 80px 20px;
+  text-align: center;
+  color: var(--text-secondary);
+}
+
+.emptyIcon {
+  margin-bottom: 16px;
+  opacity: 0.5;
+}
+
+/* BOM Details */
+.bomDetailsRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  padding: 8px 16px 16px 16px;
+  background: white;
+  border-bottom: 1px solid var(--border-light);
+}
+
+.bomDetailItem {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+}
+
+.bomDetailLabel {
+  color: var(--text-secondary);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.bomDetailValue {
+  color: var(--text-primary);
+  font-weight: 500;
+}
