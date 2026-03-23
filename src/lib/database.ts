@@ -16,7 +16,7 @@ import {
 } from "@/lib/project-data";
 
 const DATA_DIR = path.join(process.cwd(), ".data");
-const DB_PATH = path.join(DATA_DIR, "streamliner_v2.sqlite");
+const DB_PATH = path.join(DATA_DIR, "streamliner_v3.sqlite");
 
 type IdRow = { id: number };
 
@@ -43,6 +43,9 @@ function ensureDatabase() {
       due_date TEXT NOT NULL,
       projected_end_date TEXT NOT NULL,
       notes TEXT,
+      /* Phase 3.1: Check-out logic */
+      checkout_by TEXT,
+      checkout_at DATETIME,
       created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
     );
     CREATE TABLE IF NOT EXISTS categories (
@@ -150,6 +153,7 @@ function ensureDatabase() {
       document_count INTEGER NOT NULL,
       sent_date TEXT NOT NULL,
       status TEXT NOT NULL,
+      remarks TEXT,
       FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE CASCADE
     );
     CREATE TABLE IF NOT EXISTS wbs_rows (
@@ -172,7 +176,20 @@ function ensureDatabase() {
       sugg_end TEXT,
       manager TEXT,
       department TEXT,
-      raw_data TEXT NOT NULL,
+      raw_data TEXT NOT NULL, /* Full 82-column original data JSON */
+      
+      /* Phase 3.1: High-Fidelity Fields */
+      contractor TEXT,
+      score REAL,
+      resource TEXT,
+      material_rule TEXT,
+      cost_rule TEXT,
+      revenue_rule TEXT,
+      volume REAL,
+      work_area TEXT,
+      ready_for_po TEXT, /* Phase columns */
+      ready_for_assembly TEXT,
+      
       make_buy TEXT DEFAULT 'Buy',
       plant_allocation TEXT,
       target_month TEXT,
@@ -248,6 +265,15 @@ function seedDatabase(db: Database.Database) {
     VALUES (?, ?, ?, ?, ?, ?, ?)
   `);
 
+  const insertWBS = db.prepare(`
+    INSERT INTO wbs_rows (
+      id, project_id, wbs_id, task_id, name, type, duration, status, 
+      planned_start, planned_end, manager, raw_data, 
+      make_buy, plant_allocation, ready_for_po, ready_for_assembly
+    )
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+  `);
+
   const seed = db.transaction(() => {
     const projectA = insertProject.run({
       code: "YD-2601",
@@ -306,6 +332,16 @@ function seedDatabase(db: Database.Database) {
     insertFile.run(projectA, "Procurement", "PO-UC-001.xlsx", "Purchase Order", "R1", "Procurement", "Shared", "2026-03-15");
     insertFile.run(projectA, "Quality", "Inspection-Report-LV.docx", "Report", "R0", "QA Team", "Draft", "2026-03-19");
     insertTransmittal.run(projectA, "TR-2601-01", "JSW Steel", 4, "2026-03-18", "Sent", "GA drawings and BOM summary shared.");
+
+    /* Phase 3.1: Seed Hierarchical WBS Rows for PERT Board */
+    const wbsData = [
+      ["wbs-1", projectA, "1", "CAT-1", "Category 1 - Engineering", "Category", "60d", "In Progress", "2026-01-01", "2026-03-01", "Aditya Saini", "{}", "Make", "Plant 1", "10d", "50d"],
+      ["wbs-2", projectA, "1.1", "ASM-101", "Uncoiler Shell Fabrication", "Assembly", "25d", "In Progress", "2026-01-10", "2026-02-05", "Aditya Saini", "{}", "Make", "Plant 1", "5d", "20d"],
+      ["wbs-3", projectA, "1.1.1", "COMP-101", "Main Mandrel Shaft", "Component", "12d", "Completed", "2026-01-12", "2026-01-24", "Om Dev", "{}", "Buy", "Plant 1", "2d", "10d"],
+      ["wbs-4", projectA, "1.1.2", "COMP-102", "Bearing Housing", "Component", "15d", "Ordered", "2026-01-15", "2026-01-30", "Om Dev", "{}", "Buy", "Plant 1", "3d", "12d"],
+      ["wbs-5", projectA, "1.2", "ASM-102", "Drive Train Assembly", "Assembly", "30d", "Pending", "2026-02-10", "2026-03-12", "Aditya Saini", "{}", "Buy", "Plant 2", "10d", "20d"],
+    ];
+    wbsData.forEach(row => insertWBS.run(...row));
 
     const categoryB = db.prepare("SELECT id, name FROM categories WHERE project_id = ?").all(projectB) as Array<{ id: number; name: string }>;
     const catMapB = new Map(categoryB.map((row) => [row.name, row.id]));

@@ -1,0 +1,262 @@
+.page {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background: white;
+}
+
+.topBar {
+  padding: 0 24px;
+  border-bottom: 1px solid #ddd;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #f8f9fa;
+  min-height: 56px;
+}
+
+.tabs {
+  display: flex;
+  gap: 4px;
+}
+
+.tab {
+  padding: 16px 20px;
+  border: none;
+  background: none;
+  font-size: 13px;
+  font-weight: 600;
+  color: #666;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  border-bottom: 3px solid transparent;
+  transition: all 0.2s;
+}
+
+.tab.active {
+  color: var(--primary-accent);
+  border-bottom-color: var(--primary-accent);
+  background: rgba(227, 24, 55, 0.03);
+}
+
+.tab:hover {
+  background: rgba(0, 0, 0, 0.02);
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.toolBtn {
+  width: 32px;
+  height: 32px;
+  border-radius: 4px;
+  border: 1px solid #ddd;
+  background: white;
+  color: #555;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.divider {
+  width: 1px;
+  height: 24px;
+  background: #ccc;
+  margin: 0 8px;
+}
+
+.checkoutBtn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  border-radius: 20px;
+  border: 1px solid #ddd;
+  background: #eee;
+  font-size: 13px;
+  font-weight: 700;
+  color: #333;
+  cursor: pointer;
+}
+
+.checkoutBtn.locked {
+  background: var(--primary-accent);
+  color: white;
+  border-color: var(--primary-accent);
+}
+
+.content {
+  flex: 1;
+  overflow: hidden;
+  position: relative;
+}
+
+.gridContainer {
+  height: 100%;
+  overflow: auto;
+  padding: 0;
+}
+
+.gridTable {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.gridTable th {
+  position: sticky;
+  top: 0;
+  background: #f0f0f0;
+  padding: 12px 16px;
+  text-align: left;
+  font-weight: 700;
+  color: #333;
+  border-bottom: 2px solid #ddd;
+  border-right: 1px solid #eee;
+  white-space: nowrap;
+}
+
+.gridTable td {
+  padding: 10px 16px;
+  border-bottom: 1px solid #eee;
+  border-right: 1px solid #f9f9f9;
+  color: #444;
+  cursor: pointer;
+}
+
+.gridTable tr:hover td {
+  background: #fdf5f5;
+}
+
+.idCell {
+  color: #999;
+  font-family: monospace;
+  width: 60px;
+}
+
+.nameWrapper {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.toggleBtn {
+  background: none;
+  border: none;
+  padding: 2px;
+  cursor: pointer;
+  color: #666;
+  display: flex;
+  align-items: center;
+}
+
+.dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 3px;
+  background: #ccc;
+  margin: 0 6px;
+}
+
+.categoryName {
+  font-weight: 700;
+  color: #000;
+  text-transform: uppercase;
+  font-size: 12px;
+}
+
+.phaseCell {
+  color: #0066cc;
+  font-weight: 600;
+}
+
+.badge {
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.inprogress { background: #e3f2fd; color: #1976d2; }
+.completed { background: #e8f5e9; color: #2e7d32; }
+.ordered { background: #fff3e0; color: #f57c00; }
+.pending { background: #f5f5f5; color: #757575; }
+
+.fab {
+  position: absolute;
+  bottom: 24px;
+  right: 24px;
+  width: 56px;
+  height: 56px;
+  border-radius: 28px;
+  background: var(--primary-accent);
+  color: white;
+  border: none;
+  box-shadow: 0 4px 12px rgba(227, 24, 55, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 10;
+}
+
+/* PERT View */
+.pertContainer {
+  height: 100%;
+  background: #fafafa;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.pertPlaceholder {
+  text-align: center;
+  color: #888;
+}
+
+.pertPlaceholder h3 {
+  margin: 16px 0 8px 0;
+  color: #333;
+}
+
+.nodePreview {
+  margin-top: 32px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.node {
+  background: white;
+  border: 2px solid var(--primary-accent);
+  border-radius: 8px;
+  padding: 12px 20px;
+  font-weight: 700;
+  font-size: 13px;
+  color: #333;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+}
+
+.arrow {
+  width: 40px;
+  height: 2px;
+  background: #e31837;
+  position: relative;
+}
+
+.arrow::after {
+  content: '';
+  position: absolute;
+  right: 0;
+  top: -4px;
+  border-left: 6px solid #e31837;
+  border-top: 5px solid transparent;
+  border-bottom: 5px solid transparent;
+}
