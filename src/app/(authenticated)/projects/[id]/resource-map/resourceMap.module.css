@@ -1,0 +1,210 @@
+.page {
+  padding: 32px;
+  height: 100%;
+  overflow-y: auto;
+  background: var(--bg-primary);
+}
+
+.header {
+  margin-bottom: 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.title {
+  font-size: 24px;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+
+.subtitle {
+  color: var(--text-secondary);
+  font-size: 14px;
+  max-width: 600px;
+}
+
+.timelineControls {
+  background: white;
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-md);
+  padding: 4px;
+  display: flex;
+}
+
+.ctrlBtn {
+  background: transparent;
+  border: none;
+  padding: 6px 16px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.activeBtn {
+  background: rgba(178, 34, 52, 0.1);
+  color: var(--sidebar-accent);
+}
+
+.plantsGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+}
+
+.plantCard {
+  background: white;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-light);
+  padding: 20px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+  transition: transform var(--transition-fast);
+}
+
+.overloadCard {
+  border-color: rgba(235, 87, 87, 0.3);
+  background: rgba(235, 87, 87, 0.02);
+}
+
+.cardHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.plantTitle {
+  font-size: 15px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.statusBadge {
+  font-size: 11px;
+  font-weight: 700;
+  padding: 4px 8px;
+  border-radius: 12px;
+}
+
+.badgeGreen { background: rgba(33, 150, 83, 0.1); color: var(--status-deep-green); }
+.badgeRed { background: rgba(235, 87, 87, 0.1); color: var(--status-red); }
+
+.cardBody {
+  margin-bottom: 16px;
+}
+
+.dataRow {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.dataLabel {
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+.dataValue {
+  font-size: 14px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.progressTrack {
+  height: 8px;
+  background: var(--border-light);
+  border-radius: 4px;
+  overflow: hidden;
+  margin-bottom: 12px;
+}
+
+.progressFill {
+  height: 100%;
+  border-radius: 4px;
+}
+
+.criticalWarning {
+  background: rgba(242, 153, 74, 0.1);
+  color: var(--status-yellow);
+  padding: 8px 12px;
+  border-radius: var(--radius-sm);
+  font-size: 12px;
+  margin-top: 12px;
+}
+
+.ganttHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px;
+  border-bottom: 1px solid var(--border-light);
+}
+
+.filterChip {
+  background: #f0f0f0;
+  padding: 4px 12px;
+  border-radius: 16px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+.ganttPlaceholder {
+  padding: 24px;
+  background: #fcfcfc;
+}
+
+.ganttLines {
+  border-left: 2px solid var(--border-light);
+  border-bottom: 2px solid var(--border-light);
+  padding-bottom: 12px;
+  margin-bottom: 12px;
+}
+
+.ganttRow {
+  display: flex;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.ganttLabel {
+  width: 180px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+.ganttTrack {
+  flex: 1;
+  height: 32px;
+  background: rgba(0,0,0,0.02);
+  border-radius: 4px;
+  position: relative;
+  overflow: hidden;
+}
+
+.ganttBar {
+  position: absolute;
+  height: 100%;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  padding-left: 12px;
+  color: white;
+  font-size: 11px;
+  font-weight: 600;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.ganttAxis {
+  display: flex;
+  justify-content: space-between;
+  padding-left: 180px;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-muted);
+}

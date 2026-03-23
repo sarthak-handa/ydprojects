@@ -1,0 +1,234 @@
+.page {
+  padding: 32px;
+  height: 100%;
+  overflow-y: auto;
+  background: var(--bg-primary);
+}
+
+.header {
+  margin-bottom: 24px;
+}
+
+.title {
+  font-size: 24px;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+
+.subtitle {
+  color: var(--text-secondary);
+  font-size: 14px;
+}
+
+.controlsBar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: white;
+  padding: 12px 16px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-light);
+  margin-bottom: 24px;
+}
+
+.tabs {
+  display: flex;
+  gap: 8px;
+}
+
+.tab {
+  background: none;
+  border: 1px solid transparent;
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: all var(--transition-fast);
+}
+
+.tab:hover {
+  background: #f4f5f7;
+  color: var(--text-primary);
+}
+
+.activeTab {
+  background: rgba(178, 34, 52, 0.1);
+  color: var(--sidebar-accent);
+  border-color: rgba(178, 34, 52, 0.2);
+}
+
+.filters {
+  display: flex;
+  gap: 8px;
+  background: #f4f5f7;
+  padding: 4px;
+  border-radius: 6px;
+}
+
+.filterBtn {
+  background: transparent;
+  border: none;
+  padding: 6px 12px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.activeFilter {
+  background: white;
+  color: var(--text-primary);
+  font-weight: 600;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+}
+
+.kpiContainer {
+  display: flex;
+  gap: 20px;
+}
+
+.kpiBox {
+  background: white;
+  border: 1px solid var(--border-light);
+  padding: 20px;
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex: 1;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.02);
+}
+
+.kpiIcon {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  background: #f8f9fa;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.kpiLabel {
+  font-size: 12px;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  margin-bottom: 4px;
+}
+
+.kpiValue {
+  font-size: 24px;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+}
+
+.kpiSub {
+  font-size: 16px;
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
+.progressContainer {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.progressBar {
+  flex: 1;
+  height: 10px;
+  background: var(--border-light);
+  border-radius: 5px;
+  overflow: hidden;
+}
+
+.progressFill {
+  height: 100%;
+  background: var(--status-deep-green);
+  border-radius: 5px;
+  transition: width 0.5s ease-out;
+}
+
+.pctText {
+  font-size: 16px;
+  font-weight: 700;
+  min-width: 45px;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.table th {
+  text-align: left;
+  padding: 16px;
+  background: #fcfcfc;
+  border-bottom: 1px solid var(--border-light);
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+}
+
+.table td {
+  padding: 16px;
+  border-bottom: 1px solid var(--border-light);
+  font-size: 13px;
+  vertical-align: middle;
+}
+
+.table tbody tr:hover {
+  background: #fafafa;
+}
+
+.compName { font-weight: 600; margin-bottom: 4px; }
+.drgNo { font-size: 11px; color: var(--text-secondary); }
+
+.assmName { font-weight: 500; margin-bottom: 4px; }
+.subassmName { font-size: 11px; color: var(--text-secondary); }
+
+.categoryChip {
+  background: #f0f0f0;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.makeChip {
+  background: rgba(178, 34, 52, 0.1);
+  color: var(--sidebar-accent);
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.buyChip {
+  background: rgba(45, 156, 219, 0.1);
+  color: #2D9CDB;
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.statusBadge {
+  font-weight: 600;
+  font-size: 12px;
+}
+
+.muted {
+  text-align: center;
+  color: var(--text-muted);
+  padding: 24px !important;
+}

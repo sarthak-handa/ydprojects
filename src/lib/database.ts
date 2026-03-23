@@ -16,7 +16,7 @@ import {
 } from "@/lib/project-data";
 
 const DATA_DIR = path.join(process.cwd(), ".data");
-const DB_PATH = path.join(DATA_DIR, "streamliner.sqlite");
+const DB_PATH = path.join(DATA_DIR, "streamliner_v2.sqlite");
 
 type IdRow = { id: number };
 
@@ -173,6 +173,20 @@ function ensureDatabase() {
       manager TEXT,
       department TEXT,
       raw_data TEXT NOT NULL,
+      make_buy TEXT DEFAULT 'Buy',
+      plant_allocation TEXT,
+      target_month TEXT,
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    );
+    CREATE TABLE IF NOT EXISTS yard_slots (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      po_number TEXT NOT NULL,
+      vendor_name TEXT NOT NULL,
+      expected_arrival_date TEXT NOT NULL,
+      slot_time TEXT,
+      status TEXT DEFAULT 'Scheduled',
+      dock_number TEXT,
+      vehicle_type TEXT,
       created_at DATETIME DEFAULT CURRENT_TIMESTAMP
     );
   `);
