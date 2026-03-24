@@ -1,0 +1,283 @@
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  z-index: 1000;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  animation: fadeIn 0.15s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+.panel {
+  background: white;
+  width: 100%;
+  max-height: 70vh;
+  border-radius: 16px 16px 0 0;
+  box-shadow: 0 -8px 40px rgba(0, 0, 0, 0.2);
+  display: flex;
+  flex-direction: column;
+  animation: slideUp 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes slideUp {
+  from { transform: translateY(40px); opacity: 0; }
+  to   { transform: translateY(0); opacity: 1; }
+}
+
+/* ── Header ──────────────────────────────────────────────────────────────────── */
+
+.header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  padding: 16px 24px 12px;
+  border-bottom: 1px solid #f3f4f6;
+}
+
+.subtitle {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: #9ca3af;
+  margin-bottom: 2px;
+}
+
+.title {
+  font-size: 16px;
+  font-weight: 800;
+  color: #111827;
+  letter-spacing: -0.3px;
+}
+
+.headerActions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.saveBtn {
+  padding: 7px 20px;
+  border-radius: 8px;
+  border: none;
+  background: #e31837;
+  color: white;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: opacity 0.15s;
+}
+
+.saveBtn:hover { opacity: 0.85; }
+
+.closeBtn {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+  background: #f9fafb;
+  color: #6b7280;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.closeBtn:hover {
+  background: #f3f4f6;
+  color: #374151;
+}
+
+/* ── Phase Pills ──────────────────────────────────────────────────────────────── */
+
+.phasePills {
+  display: flex;
+  gap: 8px;
+  padding: 10px 24px;
+  border-bottom: 1px solid #f3f4f6;
+  flex-wrap: wrap;
+}
+
+.pill {
+  padding: 3px 12px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+/* ── Table ────────────────────────────────────────────────────────────────────── */
+
+.tableWrapper {
+  flex: 1;
+  overflow: auto;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+}
+
+.table thead th {
+  position: sticky;
+  top: 0;
+  background: #f8fafc;
+  padding: 8px 12px;
+  text-align: left;
+  font-weight: 700;
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  color: #6b7280;
+  border-bottom: 2px solid #e5e7eb;
+  white-space: nowrap;
+  z-index: 2;
+}
+
+.srCol {
+  width: 36px !important;
+  text-align: center !important;
+  color: #9ca3af !important;
+}
+
+.actionCol {
+  width: 40px !important;
+  text-align: center !important;
+}
+
+/* ── Data Row ─────────────────────────────────────────────────────────────────── */
+
+.dataRow {
+  transition: background 0.1s;
+}
+
+.dataRow:hover {
+  background: #f8fafc;
+}
+
+.dataRow td {
+  border-bottom: 1px solid #f3f4f6;
+  vertical-align: middle;
+}
+
+.srCell {
+  padding: 6px 8px !important;
+  text-align: center;
+  font-size: 11px;
+  color: #9ca3af;
+  font-variant-numeric: tabular-nums;
+}
+
+.cell {
+  padding: 4px 8px !important;
+  cursor: text;
+  min-width: 80px;
+}
+
+.cellText {
+  display: block;
+  padding: 4px 4px;
+  font-size: 12px;
+  color: #374151;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 220px;
+}
+
+/* ── Inputs ───────────────────────────────────────────────────────────────────── */
+
+.textInput, .selectInput {
+  width: 100%;
+  font-size: 12px;
+  padding: 4px 8px;
+  border: 2px solid #3b82f6;
+  border-radius: 4px;
+  outline: none;
+  background: #eff6ff;
+  color: #1e40af;
+  font-weight: 600;
+}
+
+/* ── Status Badge ─────────────────────────────────────────────────────────────── */
+
+.statusBadge {
+  padding: 3px 10px;
+  border-radius: 12px;
+  font-size: 10px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+/* ── Delete button ─────────────────────────────────────────────────────────────── */
+
+.deleteRowBtn {
+  background: none;
+  border: none;
+  color: #d1d5db;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 4px;
+  display: inline-flex;
+  align-items: center;
+  transition: color 0.15s, background 0.15s;
+}
+
+.deleteRowBtn:hover {
+  color: #dc2626;
+  background: #fef2f2;
+}
+
+/* ── Empty row ─────────────────────────────────────────────────────────────────── */
+
+.emptyRow {
+  padding: 24px !important;
+  text-align: center;
+  color: #9ca3af;
+  font-size: 13px;
+  font-style: italic;
+}
+
+/* ── Footer ───────────────────────────────────────────────────────────────────── */
+
+.footer {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 10px 24px;
+  border-top: 1px solid #f3f4f6;
+  background: #fafafa;
+}
+
+.addRowBtn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  border: 1.5px dashed #d1d5db;
+  border-radius: 6px;
+  background: white;
+  color: #6b7280;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.addRowBtn:hover {
+  border-color: #3b82f6;
+  color: #3b82f6;
+  background: #eff6ff;
+}
+
+.hint {
+  font-size: 11px;
+  color: #d1d5db;
+}

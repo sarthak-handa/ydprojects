@@ -194,3 +194,92 @@ export const fullKits = [
   { id: 'FK-002', stepType: 'RECOILER DRIVE ASSEMBLY', task: 'Category 3 - Recoiler Assembly', manager: 'Aditya Saini', populated: true },
   { id: 'FK-003', stepType: 'TENSION LEVELLER ROLLS', task: 'Category 2 - Tension Leveller Unit', manager: 'Om Dev', populated: true },
 ];
+
+export interface Subtask {
+  id: string;
+  drawingNo: string;
+  name: string;
+  qty: number;
+  material: string;
+  weight: string;
+  status: 'Pending' | 'In Progress' | 'Completed' | 'Ordered';
+}
+
+export interface PertAssembly {
+  id: string;
+  name: string;
+  category: 1 | 2 | 3 | 4 | 5;
+  engineering: number;          // days
+  orderingManufacturing: number;
+  assembly: number;
+  dispatch: number;
+  subtasks: Subtask[];
+}
+
+export const MOCK_ASSEMBLIES: PertAssembly[] = [
+  // ── Category 1 ──────────────────────────────────────────────
+  { id: 'a01', name: 'COIL CAR ASSY #1', category: 1, engineering: 42, orderingManufacturing: 42, assembly: 100, dispatch: 0, subtasks: [
+    { id: 's1', drawingNo: 'YD-001-01', name: 'Mandrel Shaft', qty: 1, material: 'EN-24', weight: '120 kg', status: 'Completed' },
+    { id: 's2', drawingNo: 'YD-001-02', name: 'Bearing Housing', qty: 2, material: 'Cast Iron', weight: '45 kg', status: 'Ordered' },
+    { id: 's3', drawingNo: 'YD-001-03', name: 'Drive Pulley', qty: 1, material: 'MS', weight: '30 kg', status: 'Pending' },
+  ]},
+  { id: 'a02', name: 'COIL CAR ASSY #2', category: 1, engineering: 42, orderingManufacturing: 42, assembly: 100, dispatch: 0, subtasks: [
+    { id: 's4', drawingNo: 'YD-002-01', name: 'Frame Structure', qty: 1, material: 'MS ISMC 200', weight: '350 kg', status: 'In Progress' },
+    { id: 's5', drawingNo: 'YD-002-02', name: 'Hydraulic Cylinder', qty: 2, material: 'Bought Out', weight: '28 kg', status: 'Ordered' },
+  ]},
+  { id: 'a03', name: 'TUBE ASSY', category: 1, engineering: 34, orderingManufacturing: 34, assembly: 42, dispatch: 0, subtasks: [
+    { id: 's6', drawingNo: 'YD-003-01', name: 'Main Tube', qty: 1, material: 'SS 304', weight: '55 kg', status: 'Pending' },
+  ]},
+  { id: 'a04', name: 'PINCH ROLL ASSY', category: 1, engineering: 24, orderingManufacturing: 24, assembly: 24, dispatch: 0, subtasks: [
+    { id: 's7', drawingNo: 'YD-004-01', name: 'Roll Shaft', qty: 2, material: 'EN-8', weight: '80 kg', status: 'Pending' },
+    { id: 's8', drawingNo: 'YD-004-02', name: 'Roll Cover', qty: 2, material: 'Rubber', weight: '15 kg', status: 'Pending' },
+  ]},
+  { id: 'a05', name: 'DEFLECTOR ROLL ASSY', category: 1, engineering: 24, orderingManufacturing: 24, assembly: 24, dispatch: 0, subtasks: [
+    { id: 's9', drawingNo: 'YD-005-01', name: 'Deflector Roll', qty: 1, material: 'Chrome Steel', weight: '95 kg', status: 'Pending' },
+  ]},
+  { id: 'a06', name: 'SUPPORT ROLL ASSY', category: 1, engineering: 24, orderingManufacturing: 24, assembly: 24, dispatch: 0, subtasks: [
+    { id: 's10', drawingNo: 'YD-006-01', name: 'Support Roll Body', qty: 1, material: 'MS', weight: '110 kg', status: 'Pending' },
+  ]},
+  { id: 'a07', name: 'TRIM-IN-TRIMMER ASSY', category: 1, engineering: 24, orderingManufacturing: 24, assembly: 24, dispatch: 0, subtasks: [
+    { id: 's11', drawingNo: 'YD-007-01', name: 'Trim Blade', qty: 4, material: 'D2 Tool Steel', weight: '8 kg', status: 'Pending' },
+  ]},
+  { id: 'a08', name: 'TURN ROLL ASSY', category: 1, engineering: 24, orderingManufacturing: 24, assembly: 24, dispatch: 0, subtasks: [] },
+  { id: 'a09', name: 'CLEANING SECTION ASSY', category: 1, engineering: 40, orderingManufacturing: 40, assembly: 40, dispatch: 0, subtasks: [] },
+  { id: 'a10', name: 'SQUEEZE ROLL ASSY', category: 1, engineering: 24, orderingManufacturing: 24, assembly: 24, dispatch: 0, subtasks: [] },
+  { id: 'a11', name: 'STEERING ROLL ASSY', category: 1, engineering: 24, orderingManufacturing: 24, assembly: 24, dispatch: 0, subtasks: [] },
+  { id: 'a12', name: 'DRYER ASSY', category: 1, engineering: 24, orderingManufacturing: 24, assembly: 24, dispatch: 0, subtasks: [] },
+  { id: 'a13', name: 'CTLR ROLL UNIT', category: 1, engineering: 24, orderingManufacturing: 24, assembly: 24, dispatch: 0, subtasks: [] },
+  { id: 'a14', name: 'SPINDLE TRIMMER', category: 1, engineering: 24, orderingManufacturing: 24, assembly: 24, dispatch: 0, subtasks: [] },
+  { id: 'a15', name: 'HOLE DETECTION ASSY', category: 1, engineering: 24, orderingManufacturing: 24, assembly: 24, dispatch: 0, subtasks: [] },
+
+  // ── Category 2 ──────────────────────────────────────────────
+  { id: 'a16', name: 'ETB CLAMP ASSY', category: 2, engineering: 24, orderingManufacturing: 24, assembly: 1000, dispatch: 0, subtasks: [] },
+  { id: 'a17', name: 'HARDENER BLOCK ASSY', category: 2, engineering: 42, orderingManufacturing: 42, assembly: 100, dispatch: 0, subtasks: [
+    { id: 's12', drawingNo: 'YD-017-01', name: 'Block Body', qty: 1, material: 'EN-31', weight: '200 kg', status: 'Pending' },
+  ]},
+  { id: 'a18', name: 'TAPER WEDGE ASSY', category: 2, engineering: 42, orderingManufacturing: 42, assembly: 100, dispatch: 0, subtasks: [] },
+  { id: 'a19', name: 'TOP SEPARATOR ASSY', category: 2, engineering: 24, orderingManufacturing: 24, assembly: 24, dispatch: 0, subtasks: [] },
+  { id: 'a20', name: 'WORK ROLL INNER ASSY', category: 2, engineering: 24, orderingManufacturing: 24, assembly: 24, dispatch: 0, subtasks: [] },
+
+  // ── Category 3 ──────────────────────────────────────────────
+  { id: 'a21', name: 'BACKUP INNER ASSY', category: 3, engineering: 24, orderingManufacturing: 24, assembly: 24, dispatch: 0, subtasks: [] },
+  { id: 'a22', name: 'QUOC TOOLARY TRAC ASSY', category: 3, engineering: 24, orderingManufacturing: 24, assembly: 200, dispatch: 0, subtasks: [] },
+  { id: 'a23', name: 'BACKUP OUTSIDE ASSY', category: 3, engineering: 24, orderingManufacturing: 24, assembly: 24, dispatch: 0, subtasks: [] },
+  { id: 'a24', name: 'BACKUP ROLLING ASSY', category: 3, engineering: 24, orderingManufacturing: 24, assembly: 24, dispatch: 0, subtasks: [] },
+  { id: 'a25', name: 'ROLL FORCE CYLINDER ASSY', category: 3, engineering: 24, orderingManufacturing: 24, assembly: 24, dispatch: 0, subtasks: [] },
+
+  // ── Category 4 ──────────────────────────────────────────────
+  { id: 'a26', name: 'MAIN DRIVE GEARBOX', category: 4, engineering: 60, orderingManufacturing: 90, assembly: 120, dispatch: 30, subtasks: [
+    { id: 's13', drawingNo: 'YD-026-01', name: 'Helical Gear Pair', qty: 2, material: 'Case Carburised', weight: '180 kg', status: 'Ordered' },
+    { id: 's14', drawingNo: 'YD-026-02', name: 'Gearbox Housing', qty: 1, material: 'Cast Iron GG25', weight: '450 kg', status: 'In Progress' },
+  ]},
+  { id: 'a27', name: 'MAIN MOTOR ASSEMBLY', category: 4, engineering: 30, orderingManufacturing: 60, assembly: 20, dispatch: 10, subtasks: [] },
+
+  // ── Category 5 ──────────────────────────────────────────────
+  { id: 'a28', name: 'ELECTRICAL PANEL ASSY', category: 5, engineering: 90, orderingManufacturing: 120, assembly: 60, dispatch: 30, subtasks: [
+    { id: 's15', drawingNo: 'YD-028-01', name: 'PLC Module', qty: 3, material: 'Bought Out', weight: '5 kg', status: 'Ordered' },
+    { id: 's16', drawingNo: 'YD-028-02', name: 'Panel Cabinet', qty: 1, material: 'SS 304 Sheet', weight: '120 kg', status: 'Pending' },
+  ]},
+  { id: 'a29', name: 'HYDRAULIC POWER PACK', category: 5, engineering: 60, orderingManufacturing: 90, assembly: 45, dispatch: 15, subtasks: [] },
+  { id: 'a30', name: 'LUBRICATION SYSTEM', category: 5, engineering: 45, orderingManufacturing: 60, assembly: 30, dispatch: 10, subtasks: [] },
+];

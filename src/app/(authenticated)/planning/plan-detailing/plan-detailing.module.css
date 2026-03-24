@@ -171,6 +171,43 @@
   font-size: 12px;
 }
 
+.catDot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  display: inline-block;
+}
+
+.catBadge {
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 10px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.totalBadge {
+  background: #fef9c3;
+  color: #854d0e;
+  padding: 3px 10px;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.compCount {
+  font-size: 12px;
+  font-weight: 600;
+  color: #374151;
+}
+
+.clickHint {
+  font-size: 11px;
+  color: #9ca3af;
+  font-style: italic;
+}
+
 .phaseCell {
   color: #0066cc;
   font-weight: 600;
