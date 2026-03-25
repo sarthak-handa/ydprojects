@@ -1,9 +1,8 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { Package, Truck, CheckCircle, Clock, TruckIcon, Search } from "lucide-react";
+import { Package, Truck, Clock, TruckIcon } from "lucide-react";
 import styles from "./orders.module.css";
-import Link from "next/link";
 
 type OrderRow = {
   id: string;
@@ -27,8 +26,8 @@ export default function OrdersPage() {
       try {
         const res = await fetch("/api/orders");
         const data = await res.json();
-        setOrders(data);
-      } catch (err) {
+        setOrders(data.orders ?? []);
+      } catch {
         console.error("Failed to load orders");
       } finally {
         setLoading(false);

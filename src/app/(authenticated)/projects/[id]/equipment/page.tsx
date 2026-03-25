@@ -1,6 +1,6 @@
 import React from 'react';
 import Link from 'next/link';
-import { ArrowLeft, Box, CheckCircle, Clock } from 'lucide-react';
+import { ArrowLeft } from 'lucide-react';
 import styles from './equipment.module.css';
 import EquipmentTree from './EquipmentTree';
 

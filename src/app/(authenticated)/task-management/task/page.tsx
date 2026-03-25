@@ -2,11 +2,11 @@
 
 import React, { useState } from 'react';
 import { mockTasks } from '@/data/mockData';
-import { Filter, ChevronDown } from 'lucide-react';
+import { Filter } from 'lucide-react';
 import styles from './task.module.css';
 
 export default function TaskPage() {
-  const [statusFilter, setStatusFilter] = useState('all');
+  const [statusFilter] = useState('all');
 
   const filteredTasks = statusFilter === 'all' ? mockTasks :
     mockTasks.filter(t => t.status === statusFilter);

@@ -10,7 +10,7 @@ export default function VelocityKPIPage({ params }: { params: { id: string } }) 
   const [loading, setLoading] = useState(true);
 
   // Simulated live KPIs for Focus-&-Finish
-  const [kpis, setKpis] = useState({
+  const [kpis] = useState({
       velocityScore: 1.12,
       plannedCompletion: 65, // %
       actualCompletion: 72,  // %

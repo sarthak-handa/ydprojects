@@ -27,11 +27,11 @@ export default function RedFlagsPage() {
     async function fetchFlags() {
       try {
         const res = await fetch("/api/red-flags");
-        if(res.ok) {
-            const data = await res.json();
-            setFlags(data);
+        if (res.ok) {
+          const data = await res.json();
+          setFlags(data.redFlags ?? []);
         }
-      } catch (err) {
+      } catch {
         console.error("Failed to load red flags");
       } finally {
         setLoading(false);

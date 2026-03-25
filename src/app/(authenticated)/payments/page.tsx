@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { DollarSign, CheckCircle2, Clock, AlertCircle } from "lucide-react";
+import { CheckCircle2, Clock, AlertCircle } from "lucide-react";
 import styles from "./payments.module.css";
 import { formatCurrency, formatDate } from "@/lib/format";
 
@@ -30,7 +30,7 @@ export default function PaymentsPage() {
         const data = await res.json();
         setPayments(data.rows);
         setSummary(data.summary);
-      } catch (err) {
+      } catch {
         console.error("Failed to load payments");
       } finally {
         setLoading(false);

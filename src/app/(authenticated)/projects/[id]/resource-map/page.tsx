@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { Factory, Calendar as CalendarIcon, Server, Search, Building2 } from "lucide-react";
+import { Building2 } from "lucide-react";
 import styles from "./resourceMap.module.css";
 
 export const dynamic = 'force-dynamic';
@@ -17,7 +17,6 @@ type PlantLoad = {
 export default function ResourceDeploymentMap() {
   const [loading, setLoading] = useState(true);
   const [plantData, setPlantData] = useState<PlantLoad[]>([]);
-  const [activeTab, setActiveTab] = useState("Utilization");
 
   useEffect(() => {
     // Generate simulated dynamic data representing the SQL allocation load across plants

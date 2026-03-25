@@ -1,47 +1,76 @@
-import { NextResponse } from 'next/server';
-import { database } from '@/lib/database';
-import { v4 as uuidv4 } from 'uuid';
+import { NextResponse } from "next/server";
+import {
+  createProject,
+  getProjects,
+  getReferenceData,
+} from "@/lib/database";
+
+export const runtime = "nodejs";
+
+function errorMessage(error: unknown) {
+  return error instanceof Error ? error.message : "Unknown error";
+}
 
 export async function GET() {
-  const db = database();
   try {
-    const projects = db.prepare('SELECT * FROM projects ORDER BY created_at DESC').all();
-    return NextResponse.json(projects);
+    return NextResponse.json({
+      projects: getProjects(),
+      reference: getReferenceData(),
+    });
   } catch (error) {
-    console.error('Error fetching projects:', error);
-    return NextResponse.json({ error: 'Failed to fetch projects' }, { status: 500 });
+    console.error("Error fetching projects:", error);
+    return NextResponse.json(
+      {
+        error: "Failed to fetch projects",
+        details: errorMessage(error),
+      },
+      { status: 500 },
+    );
   }
 }
 
 export async function POST(request: Request) {
-  const db = database();
   try {
     const body = await request.json();
-    const id = uuidv4();
-    
-    // For manual creation
-    const stmt = db.prepare(`
-      INSERT INTO projects (id, project_id, name, division, manager, plan_status, state, start_date, due_date, projected_date, planned_end)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-    `);
-    
-    stmt.run(
-      id,
-      body.project_id || `P-${Date.now()}`,
-      body.name,
-      body.division || 'DEFAULT',
-      body.manager || '',
-      body.plan_status || 'Checked In',
-      body.state || 'In Process',
-      body.start_date || '',
-      body.due_date || '',
-      body.projected_date || '',
-      body.planned_end || ''
+    const dueDate = String(
+      body.due_date ??
+        body.dueDate ??
+        new Date().toISOString().slice(0, 10),
     );
-    
-    return NextResponse.json({ id, ...body }, { status: 201 });
-  } catch (error: any) {
-    console.error('Error creating project:', error);
-    return NextResponse.json({ error: 'Failed to create project', details: error.message }, { status: 500 });
+    const projectedEndDate = String(
+      body.projected_end_date ?? body.projectedEndDate ?? dueDate,
+    );
+    const name = String(body.name ?? "").trim();
+
+    if (!name) {
+      return NextResponse.json(
+        { error: "Project name is required" },
+        { status: 400 },
+      );
+    }
+
+    const project = createProject({
+      code: String(body.code ?? body.project_id ?? `P-${Date.now()}`),
+      name,
+      manager: String(body.manager ?? "Unassigned"),
+      division: String(body.division ?? "DEFAULT"),
+      client_name: String(
+        body.client_name ?? body.clientName ?? "Unknown Client",
+      ),
+      due_date: dueDate,
+      projected_end_date: projectedEndDate,
+      notes: body.notes ? String(body.notes) : undefined,
+    });
+
+    return NextResponse.json({ project }, { status: 201 });
+  } catch (error) {
+    console.error("Error creating project:", error);
+    return NextResponse.json(
+      {
+        error: "Failed to create project",
+        details: errorMessage(error),
+      },
+      { status: 500 },
+    );
   }
 }

@@ -3,6 +3,12 @@ import { database } from '@/lib/database';
 import * as xlsx from 'xlsx';
 import { v4 as uuidv4 } from 'uuid';
 
+type ImportedSheetRow = Record<string, string | number | boolean | null | undefined>;
+
+function errorMessage(error: unknown) {
+  return error instanceof Error ? error.message : 'Unknown error';
+}
+
 export async function POST(req: NextRequest) {
   const db = database();
   try {
@@ -31,10 +37,10 @@ export async function POST(req: NextRequest) {
     
     // Parse to JSON matching headers
     // Note: Streamliner Excel files have specific headers (Task ID, Name, Type, Index, etc)
-    const data: any[] = xlsx.utils.sheet_to_json(sheet, { defval: "" });
+    const data = xlsx.utils.sheet_to_json<ImportedSheetRow>(sheet, { defval: "" });
 
     // Begin a database transaction to ensure atomicity
-    const insertTransaction = db.transaction((rows: any[], pid: string) => {
+    const insertTransaction = db.transaction((rows: ImportedSheetRow[], pid: string) => {
       // First, clear existing WBS rows for this project if overwriting
       db.prepare('DELETE FROM wbs_rows WHERE project_id = ?').run(pid);
 
@@ -94,8 +100,8 @@ export async function POST(req: NextRequest) {
       message: `Successfully imported ${data.length} rows to project ${projectId}` 
     });
 
-  } catch (error: any) {
+  } catch (error) {
     console.error('Import Error:', error);
-    return NextResponse.json({ error: 'Failed to import Excel file', details: error.message }, { status: 500 });
+    return NextResponse.json({ error: 'Failed to import Excel file', details: errorMessage(error) }, { status: 500 });
   }
 }

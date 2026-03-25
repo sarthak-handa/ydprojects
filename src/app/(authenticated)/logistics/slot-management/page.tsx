@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { Truck, CalendarDays, Clock, MapPin, CheckSquare } from "lucide-react";
+import { Truck, CalendarDays, Clock, MapPin } from "lucide-react";
 import styles from "./logistics.module.css";
 import { formatDate } from "@/lib/format";
 
