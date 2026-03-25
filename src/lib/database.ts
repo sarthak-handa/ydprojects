@@ -29,9 +29,37 @@ function tableHasColumn(db: Database.Database, tableName: string, columnName: st
   return columns.some((column) => column.name === columnName);
 }
 
+function tableExists(db: Database.Database, tableName: string) {
+  const row = db
+    .prepare(`SELECT COUNT(*) as n FROM sqlite_master WHERE type='table' AND name=?`)
+    .get(tableName) as { n: number };
+  return row.n > 0;
+}
+
 function runMigrations(db: Database.Database) {
+  // Legacy migration
   if (!tableHasColumn(db, "transmittals", "remarks")) {
     db.exec("ALTER TABLE transmittals ADD COLUMN remarks TEXT");
+  }
+
+  // Planning v2: attach phase_id to subtasks so a subtask knows which phase it belongs to
+  if (tableExists(db, "plan_subtasks") && !tableHasColumn(db, "plan_subtasks", "phase_id")) {
+    db.exec("ALTER TABLE plan_subtasks ADD COLUMN phase_id INTEGER REFERENCES plan_phases(id) ON DELETE SET NULL");
+  }
+
+  // Planning v2: track completion percent on each subtask
+  if (tableExists(db, "plan_subtasks") && !tableHasColumn(db, "plan_subtasks", "completion_percent")) {
+    db.exec("ALTER TABLE plan_subtasks ADD COLUMN completion_percent REAL NOT NULL DEFAULT 0");
+  }
+
+  // Planning v2: notes field on DPR entries
+  if (tableExists(db, "plan_dpr") && !tableHasColumn(db, "plan_dpr", "notes")) {
+    db.exec("ALTER TABLE plan_dpr ADD COLUMN notes TEXT");
+  }
+
+  // Time Engine v1: project_start_date on projects
+  if (tableExists(db, "projects") && !tableHasColumn(db, "projects", "project_start_date")) {
+    db.exec("ALTER TABLE projects ADD COLUMN project_start_date TEXT");
   }
 }
 
@@ -218,6 +246,49 @@ function ensureDatabase() {
       dock_number TEXT,
       vehicle_type TEXT,
       created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    );
+
+    /* ── Planning Module Tables ─────────────────────────────── */
+    CREATE TABLE IF NOT EXISTS plan_assemblies (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      project_id INTEGER NOT NULL,
+      name TEXT NOT NULL,
+      category INTEGER NOT NULL CHECK(category BETWEEN 1 AND 5),
+      order_index INTEGER NOT NULL DEFAULT 0,
+      created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+      FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE CASCADE
+    );
+
+    CREATE TABLE IF NOT EXISTS plan_phases (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      assembly_id INTEGER NOT NULL,
+      phase_name TEXT NOT NULL,
+      phase_order INTEGER NOT NULL,
+      start_date TEXT,
+      end_date TEXT,
+      duration_days INTEGER NOT NULL DEFAULT 0,
+      FOREIGN KEY (assembly_id) REFERENCES plan_assemblies(id) ON DELETE CASCADE
+    );
+
+    CREATE TABLE IF NOT EXISTS plan_subtasks (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      assembly_id INTEGER NOT NULL,
+      name TEXT NOT NULL,
+      start_date TEXT,
+      end_date TEXT,
+      created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+      FOREIGN KEY (assembly_id) REFERENCES plan_assemblies(id) ON DELETE CASCADE
+    );
+
+    CREATE TABLE IF NOT EXISTS plan_dpr (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      subtask_id INTEGER NOT NULL,
+      component_name TEXT NOT NULL,
+      quantity REAL NOT NULL DEFAULT 1,
+      date TEXT NOT NULL,
+      status TEXT NOT NULL DEFAULT 'Pending' CHECK(status IN ('Pending','In Progress','Completed','Dispatched')),
+      created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+      FOREIGN KEY (subtask_id) REFERENCES plan_subtasks(id) ON DELETE CASCADE
     );
   `);
 
@@ -1175,3 +1246,389 @@ export function getReferenceData() {
     redFlagStatuses: [...RED_FLAG_STATUSES],
   };
 }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   PLANNING MODULE — plan_assemblies / plan_phases / plan_subtasks / plan_dpr
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+const PLAN_PHASE_NAMES = [
+  "Engineering",
+  "Ordering & Manufacturing",
+  "Assembly",
+  "Dispatch",
+  "Project End",
+] as const;
+
+function seedAssemblyPhases(db: Database.Database, assemblyId: number) {
+  const insert = db.prepare(`
+    INSERT INTO plan_phases (assembly_id, phase_name, phase_order, duration_days)
+    VALUES (?, ?, ?, 0)
+  `);
+  PLAN_PHASE_NAMES.forEach((name, idx) => insert.run(assemblyId, name, idx + 1));
+}
+
+export function getPlanAssemblies(projectId: number) {
+  const db = database();
+  const assemblies = db
+    .prepare(`
+      SELECT pa.*, COUNT(ps.id) AS subtask_count
+      FROM plan_assemblies pa
+      LEFT JOIN plan_subtasks ps ON ps.assembly_id = pa.id
+      WHERE pa.project_id = ?
+      GROUP BY pa.id
+      ORDER BY pa.category, pa.order_index, pa.id
+    `)
+    .all(projectId) as Array<Record<string, unknown>>;
+
+  return assemblies.map((asm) => ({
+    ...asm,
+    phases: db
+      .prepare(`SELECT * FROM plan_phases WHERE assembly_id = ? ORDER BY phase_order`)
+      .all(asm.id as number),
+  }));
+}
+
+export function createPlanAssembly(
+  projectId: number,
+  input: { name: string; category: number; orderIndex?: number },
+) {
+  const db = database();
+  const tx = db.transaction(() => {
+    const result = db
+      .prepare(`
+        INSERT INTO plan_assemblies (project_id, name, category, order_index)
+        VALUES (?, ?, ?, ?)
+      `)
+      .run(projectId, input.name, input.category, input.orderIndex ?? 0);
+    const id = result.lastInsertRowid as number;
+    seedAssemblyPhases(db, id);
+    return id;
+  });
+  const id = tx();
+  return db
+    .prepare(`SELECT pa.*, COUNT(ps.id) AS subtask_count FROM plan_assemblies pa LEFT JOIN plan_subtasks ps ON ps.assembly_id = pa.id WHERE pa.id = ? GROUP BY pa.id`)
+    .get(id);
+}
+
+export function updatePlanAssembly(
+  id: number,
+  input: { name?: string; category?: number; orderIndex?: number },
+) {
+  const db = database();
+  const existing = db.prepare("SELECT * FROM plan_assemblies WHERE id = ?").get(id) as Record<string, unknown> | undefined;
+  if (!existing) throw new Error("Plan assembly not found");
+  db.prepare(`
+    UPDATE plan_assemblies SET name = ?, category = ?, order_index = ? WHERE id = ?
+  `).run(
+    input.name ?? existing.name,
+    input.category ?? existing.category,
+    input.orderIndex ?? existing.order_index,
+    id,
+  );
+  return db.prepare("SELECT * FROM plan_assemblies WHERE id = ?").get(id);
+}
+
+export function deletePlanAssembly(id: number) {
+  database().prepare("DELETE FROM plan_assemblies WHERE id = ?").run(id);
+}
+
+// ─── Time Engine ───────────────────────────────────────────────────────────────
+
+/** Locked phase order — NEVER reorder. Matches seedAssemblyPhases(). */
+const PHASE_ORDER = [
+  "Engineering",
+  "Ordering & Manufacturing",
+  "Assembly",
+  "Dispatch",
+  "Project End",
+] as const;
+
+function addDays(dateStr: string, days: number): string {
+  const d = new Date(dateStr);
+  d.setDate(d.getDate() + days);
+  return d.toISOString().slice(0, 10);
+}
+
+function diffDays(a: string, b: string): number {
+  return Math.round((new Date(b).getTime() - new Date(a).getTime()) / 86_400_000);
+}
+
+/**
+ * Core propagation function.
+ * If projectStartDate is given  → forward scheduling: each phase starts where previous ended.
+ * If projectDueDate only        → backward scheduling: walk phases in reverse from due_date.
+ * Writes start_date + end_date to every plan_phases row for this assembly.
+ */
+export function recalculateAllPhases(
+  assemblyId: number,
+  opts?: { projectStartDate?: string | null; projectDueDate?: string | null },
+) {
+  const db = database();
+  const phases = db.prepare(`
+    SELECT * FROM plan_phases WHERE assembly_id = ? ORDER BY phase_order
+  `).all(assemblyId) as Array<{
+    id: number; phase_name: string; phase_order: number;
+    start_date: string | null; end_date: string | null; duration_days: number;
+  }>;
+
+  if (phases.length === 0) return;
+
+  // Build ordered list according to locked PHASE_ORDER
+  const ordered = PHASE_ORDER.map(name => phases.find(p => p.phase_name === name)).filter(Boolean) as typeof phases;
+
+  const start = opts?.projectStartDate;
+  const due   = opts?.projectDueDate;
+
+  if (start) {
+    // ── Forward scheduling ────────────────────────────────────────────────────
+    let cursor = start;
+    for (const ph of ordered) {
+      const phStart = cursor;
+      const phEnd   = ph.duration_days > 0 ? addDays(phStart, ph.duration_days) : null;
+      db.prepare(`UPDATE plan_phases SET start_date = ?, end_date = ? WHERE id = ?`)
+        .run(phStart, phEnd, ph.id);
+      if (phEnd) cursor = phEnd;
+    }
+  } else if (due) {
+    // ── Backward scheduling from due_date ─────────────────────────────────────
+    let cursor = due;
+    for (const ph of [...ordered].reverse()) {
+      const phEnd   = cursor;
+      const phStart = ph.duration_days > 0 ? addDays(phEnd, -ph.duration_days) : null;
+      db.prepare(`UPDATE plan_phases SET start_date = ?, end_date = ? WHERE id = ?`)
+        .run(phStart, phEnd, ph.id);
+      if (phStart) cursor = phStart;
+    }
+  }
+  // If neither anchor exists → leave dates as-is (user can still manually set them)
+}
+
+export function updateProjectStartDate(projectId: number, startDate: string | null) {
+  const db = database();
+  db.prepare(`UPDATE projects SET project_start_date = ? WHERE id = ?`).run(startDate, projectId);
+
+  if (startDate) {
+    // Recalculate all assemblies for this project
+    const assemblies = db.prepare(`SELECT id FROM plan_assemblies WHERE project_id = ?`).all(projectId) as { id: number }[];
+    for (const { id } of assemblies) {
+      recalculateAllPhases(id, { projectStartDate: startDate });
+    }
+  }
+  return db.prepare(`SELECT id, code, name, project_start_date, due_date FROM projects WHERE id = ?`).get(projectId);
+}
+
+export function updatePlanPhase(
+  id: number,
+  input: { startDate?: string | null; endDate?: string | null; durationDays?: number },
+) {
+  const db = database();
+  const existing = db.prepare("SELECT * FROM plan_phases WHERE id = ?").get(id) as Record<string, unknown> | undefined;
+  if (!existing) throw new Error("Plan phase not found");
+
+  const newStart    = input.startDate !== undefined ? input.startDate : (existing.start_date as string | null);
+  const newEnd      = input.endDate   !== undefined ? input.endDate   : (existing.end_date   as string | null);
+
+  // Priority 1: both dates → compute duration
+  // Priority 2: duration + start → compute end
+  // Priority 3: just duration → keep existing start, compute end if possible
+  let newDuration = input.durationDays ?? (existing.duration_days as number) ?? 0;
+  let resolvedStart = newStart;
+  let resolvedEnd   = newEnd;
+
+  if (resolvedStart && resolvedEnd) {
+    const ms = new Date(resolvedEnd).getTime() - new Date(resolvedStart).getTime();
+    if (ms > 0) newDuration = Math.round(ms / 86_400_000);
+  } else if (input.durationDays !== undefined && resolvedStart) {
+    resolvedEnd = addDays(resolvedStart, input.durationDays);
+    newDuration = input.durationDays;
+  } else if (input.durationDays !== undefined && resolvedEnd) {
+    resolvedStart = addDays(resolvedEnd, -input.durationDays);
+    newDuration   = input.durationDays;
+  }
+
+  db.prepare(`UPDATE plan_phases SET start_date = ?, end_date = ?, duration_days = ? WHERE id = ?`)
+    .run(resolvedStart ?? null, resolvedEnd ?? null, newDuration, id);
+
+  // Propagate downstream phases — find assembly and re-walk from this phase's new end
+  const assemblyId = existing.assembly_id as number;
+  const allPhases  = db.prepare(`SELECT * FROM plan_phases WHERE assembly_id = ? ORDER BY phase_order`).all(assemblyId) as Array<{
+    id: number; phase_name: string; phase_order: number; start_date: string | null; end_date: string | null; duration_days: number;
+  }>;
+  const thisOrder = existing.phase_order as number;
+
+  // Walk forward from the phase AFTER this one
+  let cursor = resolvedEnd;
+  const ordered = PHASE_ORDER.map(name => allPhases.find(p => p.phase_name === name)).filter(Boolean) as typeof allPhases;
+  let propagating = false;
+  for (const ph of ordered) {
+    if (ph.phase_order <= thisOrder) {
+      if (ph.phase_order === thisOrder && resolvedEnd) propagating = true;
+      continue;
+    }
+    if (!propagating || !cursor) break;
+    const phEnd = ph.duration_days > 0 ? addDays(cursor, ph.duration_days) : null;
+    db.prepare(`UPDATE plan_phases SET start_date = ?, end_date = ? WHERE id = ?`)
+      .run(cursor, phEnd, ph.id);
+    if (phEnd) cursor = phEnd;
+  }
+
+  return db.prepare("SELECT * FROM plan_phases WHERE id = ?").get(id);
+}
+
+
+export function getPlanSubtasks(assemblyId: number) {
+  return database()
+    .prepare(`
+      SELECT
+        ps.*,
+        COUNT(pd.id) AS dpr_count,
+        pp.phase_name,
+        pp.start_date AS phase_start,
+        pp.end_date   AS phase_end,
+        pp.duration_days AS phase_duration
+      FROM plan_subtasks ps
+      LEFT JOIN plan_dpr     pd ON pd.subtask_id = ps.id
+      LEFT JOIN plan_phases  pp ON pp.id = ps.phase_id
+      WHERE ps.assembly_id = ?
+      GROUP BY ps.id
+      ORDER BY COALESCE(ps.phase_id, 9999), ps.id
+    `)
+    .all(assemblyId);
+}
+
+export function createPlanSubtask(
+  assemblyId: number,
+  input: { name: string; phaseId?: number | null; startDate?: string | null; endDate?: string | null },
+) {
+  const db = database();
+  const result = db
+    .prepare(`INSERT INTO plan_subtasks (assembly_id, phase_id, name, start_date, end_date) VALUES (?, ?, ?, ?, ?)`)
+    .run(assemblyId, input.phaseId ?? null, input.name, input.startDate ?? null, input.endDate ?? null);
+  return db.prepare("SELECT * FROM plan_subtasks WHERE id = ?").get(result.lastInsertRowid);
+}
+
+export function updatePlanSubtask(
+  id: number,
+  input: { name?: string; phaseId?: number | null; startDate?: string | null; endDate?: string | null; completionPercent?: number },
+) {
+  const db = database();
+  const existing = db.prepare("SELECT * FROM plan_subtasks WHERE id = ?").get(id) as Record<string, unknown> | undefined;
+  if (!existing) throw new Error("Plan subtask not found");
+  db.prepare(`UPDATE plan_subtasks SET name = ?, phase_id = ?, start_date = ?, end_date = ?, completion_percent = ? WHERE id = ?`).run(
+    input.name ?? existing.name,
+    input.phaseId !== undefined ? input.phaseId : existing.phase_id,
+    input.startDate !== undefined ? input.startDate : existing.start_date,
+    input.endDate !== undefined ? input.endDate : existing.end_date,
+    input.completionPercent ?? existing.completion_percent ?? 0,
+    id,
+  );
+  return db.prepare(`
+    SELECT ps.*, pp.phase_name, pp.start_date AS phase_start, pp.end_date AS phase_end
+    FROM plan_subtasks ps LEFT JOIN plan_phases pp ON pp.id = ps.phase_id
+    WHERE ps.id = ?
+  `).get(id);
+}
+
+export function deletePlanSubtask(id: number) {
+  database().prepare("DELETE FROM plan_subtasks WHERE id = ?").run(id);
+}
+
+export function getPlanDpr(subtaskId: number) {
+  return database()
+    .prepare("SELECT * FROM plan_dpr WHERE subtask_id = ? ORDER BY date, id")
+    .all(subtaskId);
+}
+
+export function createPlanDpr(
+  subtaskId: number,
+  input: { componentName: string; quantity: number; date: string; status: string },
+) {
+  const db = database();
+  const result = db
+    .prepare(`INSERT INTO plan_dpr (subtask_id, component_name, quantity, date, status) VALUES (?, ?, ?, ?, ?)`)
+    .run(subtaskId, input.componentName, input.quantity, input.date, input.status);
+  return db.prepare("SELECT * FROM plan_dpr WHERE id = ?").get(result.lastInsertRowid);
+}
+
+export function updatePlanDpr(
+  id: number,
+  input: { componentName?: string; quantity?: number; date?: string; status?: string },
+) {
+  const db = database();
+  const existing = db.prepare("SELECT * FROM plan_dpr WHERE id = ?").get(id) as Record<string, unknown> | undefined;
+  if (!existing) throw new Error("DPR entry not found");
+  db.prepare(`UPDATE plan_dpr SET component_name = ?, quantity = ?, date = ?, status = ? WHERE id = ?`).run(
+    input.componentName ?? existing.component_name,
+    input.quantity ?? existing.quantity,
+    input.date ?? existing.date,
+    input.status ?? existing.status,
+    id,
+  );
+  return db.prepare("SELECT * FROM plan_dpr WHERE id = ?").get(id);
+}
+
+export function deletePlanDpr(id: number) {
+  database().prepare("DELETE FROM plan_dpr WHERE id = ?").run(id);
+}
+
+/**
+ * Phase-based dispatch: assemblies whose "Dispatch" phase has an end_date set.
+ * This is the AUTHORITATIVE dispatch view — what SHOULD go out, based on planning.
+ */
+export function getPhaseDispatchSchedule() {
+  return database()
+    .prepare(`
+      SELECT
+        strftime('%Y-%m', pp.end_date) AS month,
+        p.id   AS project_id,
+        p.code AS project_code,
+        p.name AS project_name,
+        pa.id       AS assembly_id,
+        pa.name     AS assembly_name,
+        pa.category,
+        pa.order_index,
+        pp.id         AS phase_id,
+        pp.start_date AS dispatch_start,
+        pp.end_date   AS dispatch_end,
+        pp.duration_days,
+        COUNT(ps.id) AS subtask_count,
+        COALESCE(SUM(ps.completion_percent), 0) / NULLIF(COUNT(ps.id), 0) AS avg_completion
+      FROM plan_phases pp
+      INNER JOIN plan_assemblies pa ON pa.id = pp.assembly_id
+      INNER JOIN projects        p  ON p.id  = pa.project_id
+      LEFT  JOIN plan_subtasks   ps ON ps.assembly_id = pa.id AND ps.phase_id = pp.id
+      WHERE pp.phase_name = 'Dispatch'
+        AND pp.end_date IS NOT NULL
+        AND pp.end_date != ''
+      GROUP BY pa.id
+      ORDER BY month, p.id, pa.category, pa.order_index
+    `)
+    .all();
+}
+
+export function getDispatchSchedule() {
+  // DPR-based dispatch: entries grouped by date for execution-level tracking
+  return database()
+    .prepare(`
+      SELECT
+        strftime('%Y-%m', pd.date) AS month,
+        p.id AS project_id,
+        p.code AS project_code,
+        p.name AS project_name,
+        pa.id AS assembly_id,
+        pa.name AS assembly_name,
+        pa.category,
+        pd.component_name,
+        SUM(pd.quantity) AS total_quantity,
+        pd.status,
+        COUNT(pd.id) AS entry_count
+      FROM plan_dpr pd
+      INNER JOIN plan_subtasks ps ON ps.id = pd.subtask_id
+      INNER JOIN plan_assemblies pa ON pa.id = ps.assembly_id
+      INNER JOIN projects p ON p.id = pa.project_id
+      GROUP BY month, pa.id, pd.component_name, pd.status
+      ORDER BY month, p.id, pa.category, pa.order_index
+    `)
+    .all();
+}
+
