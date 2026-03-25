@@ -52,6 +52,15 @@ export const navigationItems: NavItem[] = [
     ],
   },
   {
+    id: 'planning',
+    label: 'Planning',
+    icon: 'Edit',
+    children: [
+      { id: 'modify-projects', label: 'Modify Projects', icon: 'Edit', href: '/planning/modify-projects' },
+      { id: 'plan-config', label: 'Plan Config', icon: 'Settings', href: '/planning/plan-config' },
+    ],
+  },
+  {
     id: 'manufacturing',
     label: 'Procurement',
     icon: 'Truck',

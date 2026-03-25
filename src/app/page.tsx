@@ -11,14 +11,14 @@ export default function LoginPage() {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-  const { isAuthenticated, login } = useAuth();
+  const { isAuthenticated, isReady, login } = useAuth();
   const router = useRouter();
 
   React.useEffect(() => {
-    if (isAuthenticated) {
+    if (isReady && isAuthenticated) {
       router.push('/home');
     }
-  }, [isAuthenticated, router]);
+  }, [isAuthenticated, isReady, router]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -39,7 +39,7 @@ export default function LoginPage() {
     }
   };
 
-  if (isAuthenticated) return null;
+  if (!isReady || isAuthenticated) return null;
 
   return (
     <div className={styles.loginContainer}>

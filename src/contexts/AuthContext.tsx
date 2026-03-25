@@ -11,6 +11,7 @@ interface User {
 
 interface AuthContextType {
   user: User | null;
+  isReady: boolean;
   isAuthenticated: boolean;
   login: (email: string, password: string) => Promise<boolean>;
   logout: () => void;
@@ -19,13 +20,20 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [user, setUser] = useState<User | null>(() => {
-    if (typeof window !== 'undefined') {
+  const [user, setUser] = useState<User | null>(null);
+  const [isReady, setIsReady] = useState(false);
+
+  React.useEffect(() => {
+    try {
       const stored = localStorage.getItem('streamliner_user');
-      return stored ? JSON.parse(stored) : null;
+      setUser(stored ? JSON.parse(stored) as User : null);
+    } catch {
+      localStorage.removeItem('streamliner_user');
+      setUser(null);
+    } finally {
+      setIsReady(true);
     }
-    return null;
-  });
+  }, []);
 
   const login = useCallback(async (email: string, password: string): Promise<boolean> => {
     // Mock authentication
@@ -49,7 +57,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   return (
-    <AuthContext.Provider value={{ user, isAuthenticated: !!user, login, logout }}>
+    <AuthContext.Provider value={{ user, isReady, isAuthenticated: !!user, login, logout }}>
       {children}
     </AuthContext.Provider>
   );

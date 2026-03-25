@@ -6,16 +6,16 @@ import { useAuth } from '@/contexts/AuthContext';
 import AppLayout from '@/components/Layout/AppLayout';
 
 export default function AuthenticatedLayout({ children }: { children: React.ReactNode }) {
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, isReady } = useAuth();
   const router = useRouter();
 
   useEffect(() => {
-    if (!isAuthenticated) {
+    if (isReady && !isAuthenticated) {
       router.push('/');
     }
-  }, [isAuthenticated, router]);
+  }, [isAuthenticated, isReady, router]);
 
-  if (!isAuthenticated) return null;
+  if (!isReady || !isAuthenticated) return null;
 
   return <AppLayout>{children}</AppLayout>;
 }
